@@ -230,7 +230,11 @@
 
   // ---------- 엔티티 ----------
   const player = { x: 140, y: H / 2, r: 16, hp: 100, maxHp: 100, speed: 190, fireCooldown: 0 };
-  const bot = { x: W - 140, y: H / 2, r: 16, hp: 100, maxHp: 100, fireCooldown: 1.0, vx: 0, vy: 0, targetAngle: 0 };
+  const bot = {
+    x: W - 140, y: H / 2, r: 16, hp: 100, maxHp: 100, fireCooldown: 1.0, vx: 0, vy: 0, targetAngle: 0,
+    dashing: false, dashFromX: 0, dashFromY: 0, dashToX: 0, dashToY: 0, dashElapsed: 0, dashDuration: 0.14,
+    dodgeCooldown: 0
+  };
   let bullets = [];
   let wins = 0, losses = 0;
   let roundOver = false;
@@ -292,7 +296,8 @@
     bullets.push({
       owner, x, y,
       vx: Math.cos(angle) * speed, vy: Math.sin(angle) * speed,
-      r: heavy ? 7 : 4, damage, heavy: !!heavy, born: performance.now()
+      r: heavy ? 7 : 4, damage, heavy: !!heavy, born: performance.now(),
+      dodgeChecked: false
     });
   }
 
@@ -353,24 +358,35 @@
       player.fireCooldown = 0.28;
     }
 
-    // --- 봇 이동: 중거리 유지 + 좌우 스트레이프 ---
-    const toPlayer = dist(bot.x, bot.y, player.x, player.y);
-    const desiredDist = 280;
-    let moveX = 0, moveY = 0;
-    const dirX = (player.x - bot.x) / (toPlayer || 1);
-    const dirY = (player.y - bot.y) / (toPlayer || 1);
-    if (toPlayer > desiredDist + 30) { moveX += dirX; moveY += dirY; }
-    else if (toPlayer < desiredDist - 30) { moveX -= dirX; moveY -= dirY; }
-    // 스트레이프 (시간 기반 지그재그)
-    const strafe = Math.sin(now / 500) * 1;
-    moveX += -dirY * strafe * 0.6;
-    moveY += dirX * strafe * 0.6;
-    const mlen = Math.hypot(moveX, moveY) || 1;
-    const botSpeed = 130;
-    bot.x += (moveX / mlen) * botSpeed * dt;
-    bot.y += (moveY / mlen) * botSpeed * dt;
-    bot.x = Math.max(bot.r, Math.min(W - bot.r, bot.x));
-    bot.y = Math.max(bot.r, Math.min(H - bot.r, bot.y));
+    // --- 봇 회피 대시 진행 중이면, 부드럽게 목표 지점까지 이동시키고 아래 일반 이동은 건너뜀 ---
+    if (bot.dashing) {
+      bot.dashElapsed += dt;
+      const t = Math.min(1, bot.dashElapsed / bot.dashDuration);
+      const eased = 1 - Math.pow(1 - t, 2); // ease-out
+      bot.x = lerp(bot.dashFromX, bot.dashToX, eased);
+      bot.y = lerp(bot.dashFromY, bot.dashToY, eased);
+      if (t >= 1) bot.dashing = false;
+    } else {
+      // --- 봇 이동: 중거리 유지 + 좌우 스트레이프 ---
+      const toPlayer = dist(bot.x, bot.y, player.x, player.y);
+      const desiredDist = 280;
+      let moveX = 0, moveY = 0;
+      const dirX = (player.x - bot.x) / (toPlayer || 1);
+      const dirY = (player.y - bot.y) / (toPlayer || 1);
+      if (toPlayer > desiredDist + 30) { moveX += dirX; moveY += dirY; }
+      else if (toPlayer < desiredDist - 30) { moveX -= dirX; moveY -= dirY; }
+      // 스트레이프 (시간 기반 지그재그)
+      const strafe = Math.sin(now / 500) * 1;
+      moveX += -dirY * strafe * 0.6;
+      moveY += dirX * strafe * 0.6;
+      const mlen = Math.hypot(moveX, moveY) || 1;
+      const botSpeed = 130;
+      bot.x += (moveX / mlen) * botSpeed * dt;
+      bot.y += (moveY / mlen) * botSpeed * dt;
+      bot.x = Math.max(bot.r, Math.min(W - bot.r, bot.x));
+      bot.y = Math.max(bot.r, Math.min(H - bot.r, bot.y));
+    }
+    if (bot.dodgeCooldown > 0) bot.dodgeCooldown -= dt;
 
     // --- 봇 기본 사격 (난이도: 명중률 = 조준 오차, 공격성 = 쿨다운) ---
     bot.fireCooldown -= dt;
@@ -421,19 +437,39 @@
     }
 
     // --- 봇 회피: 자신에게 다가오는 플레이어 총알 감지 ---
-    for (const b of bullets) {
-      if (b.owner !== 'player') continue;
-      const d = dist(b.x, b.y, bot.x, bot.y);
-      if (d < 90 && !bot._dodgeRoll) {
-        bot._dodgeRoll = true;
-        if (Math.random() < difficulty.dodge) {
-          const perp = Math.atan2(b.vy, b.vx) + Math.PI / 2;
-          bot.x += Math.cos(perp) * 26;
-          bot.y += Math.sin(perp) * 26;
+    // 총알 하나당 회피 판정은 딱 한 번만 (dodgeChecked) — 여러 프레임에 걸쳐 반경 안에
+    // 머무는 동안 매 프레임 판정이 다시 굴러가면서 같은 방향으로 계속 밀려 "순간이동"처럼
+    // 보이는 버그가 있었어서, 총알별로 한 번만 체크하도록 고쳤습니다.
+    // 대시 중이거나 쿨다운 중이면 새 회피를 시작하지 않음 (연속 총알에 겹쳐서 튀는 것 방지)
+    if (!bot.dashing && bot.dodgeCooldown <= 0) {
+      for (const b of bullets) {
+        if (b.owner !== 'player' || b.dodgeChecked) continue;
+        const d = dist(b.x, b.y, bot.x, bot.y);
+        if (d < 90) {
+          b.dodgeChecked = true;
+          if (Math.random() < difficulty.dodge) {
+            const perp = Math.atan2(b.vy, b.vx) + Math.PI / 2;
+            let tx = bot.x + Math.cos(perp) * 26;
+            let ty = bot.y + Math.sin(perp) * 26;
+            tx = Math.max(bot.r, Math.min(W - bot.r, tx));
+            ty = Math.max(bot.r, Math.min(H - bot.r, ty));
+            bot.dashing = true;
+            bot.dashFromX = bot.x; bot.dashFromY = bot.y;
+            bot.dashToX = tx; bot.dashToY = ty;
+            bot.dashElapsed = 0;
+            bot.dodgeCooldown = 0.35;
+          }
+          break; // 한 프레임에 하나의 총알만 회피 판정 대상으로 삼음
+        }
+      }
+    } else {
+      // 대시/쿨다운 중에는 그냥 다가온 총알들을 "체크 완료"로만 표시해서 나중에 되돌아와 다시 판정하지 않게 함
+      for (const b of bullets) {
+        if (b.owner === 'player' && !b.dodgeChecked && dist(b.x, b.y, bot.x, bot.y) < 90) {
+          b.dodgeChecked = true;
         }
       }
     }
-    bot._dodgeRoll = false;
 
     // --- 총알 이동 & 충돌 ---
     bullets = bullets.filter(b => {
