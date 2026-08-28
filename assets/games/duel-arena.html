@@ -1,0 +1,541 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AI Duel Arena</title>
+<style>
+  :root {
+    --bg: #0e1116;
+    --panel: #171b22;
+    --border: #2a2f3a;
+    --fg: #e8ebf0;
+    --muted: #8b93a3;
+    --player: #4da3ff;
+    --bot: #ff5c7a;
+    --accent: #7d94ff;
+    --good: #38c976;
+    --warn: #f0b429;
+  }
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0; padding: 0; background: var(--bg); color: var(--fg);
+    font-family: -apple-system, "Segoe UI", Pretendard, "Apple SD Gothic Neo", Roboto, sans-serif;
+  }
+  .app {
+    max-width: 880px;
+    margin: 0 auto;
+    padding: 16px;
+  }
+  h1 {
+    font-size: 18px;
+    margin: 0 0 4px;
+  }
+  .sub {
+    color: var(--muted);
+    font-size: 13px;
+    margin: 0 0 14px;
+  }
+  .stage-wrap {
+    position: relative;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+    background: #0a0d12;
+  }
+  canvas {
+    display: block;
+    width: 100%;
+    height: auto;
+    cursor: crosshair;
+  }
+  .hud {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    padding: 10px 14px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+  .hp-row {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+  }
+  .hp-block { width: 46%; }
+  .hp-label {
+    font-size: 12px;
+    margin-bottom: 4px;
+    display: flex;
+    justify-content: space-between;
+    color: var(--muted);
+  }
+  .hp-bar {
+    height: 10px;
+    border-radius: 6px;
+    background: #1e232d;
+    overflow: hidden;
+    border: 1px solid var(--border);
+  }
+  .hp-fill { height: 100%; transition: width 0.15s linear; }
+  .hp-fill.player { background: var(--player); }
+  .hp-fill.bot { background: var(--bot); }
+
+  .center-msg {
+    align-self: center;
+    text-align: center;
+    font-size: 22px;
+    font-weight: 700;
+    text-shadow: 0 2px 8px rgba(0,0,0,0.6);
+    opacity: 0;
+    transition: opacity 0.2s;
+  }
+  .center-msg.show { opacity: 1; }
+
+  .panel {
+    margin-top: 14px;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    background: var(--panel);
+    padding: 14px 16px;
+  }
+  .panel h2 {
+    font-size: 13px;
+    margin: 0 0 10px;
+    color: var(--muted);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+  .stat-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+  }
+  .stat {
+    background: #12151b;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 10px;
+  }
+  .stat .label { font-size: 11px; color: var(--muted); margin-bottom: 4px; }
+  .stat .value { font-size: 17px; font-weight: 700; }
+  .stat .bar { margin-top: 6px; height: 6px; border-radius: 4px; background: #1e232d; overflow: hidden; }
+  .stat .bar-fill { height: 100%; background: var(--accent); }
+
+  .skill-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-top: 12px;
+  }
+  .skill-row .value { font-size: 20px; font-weight: 800; color: var(--good); }
+
+  .footer {
+    margin-top: 10px;
+    font-size: 12px;
+    color: var(--muted);
+    line-height: 1.6;
+  }
+  .score {
+    font-size: 13px;
+    color: var(--muted);
+  }
+  @media (max-width: 560px) {
+    .stat-grid { grid-template-columns: repeat(2, 1fr); }
+  }
+</style>
+</head>
+<body>
+<div class="app">
+  <h1>AI Duel Arena</h1>
+  <p class="sub">
+    WASD로 이동, 마우스로 조준, 클릭(또는 스페이스)으로 사격. 플레이어 실력에 따라 봇 난이도가 실시간으로 조정됩니다.
+  </p>
+
+  <div class="stage-wrap">
+    <canvas id="stage" width="820" height="460"></canvas>
+    <div class="hud">
+      <div class="hp-row">
+        <div class="hp-block">
+          <div class="hp-label"><span>PLAYER</span><span id="playerHpText">100</span></div>
+          <div class="hp-bar"><div class="hp-fill player" id="playerHpFill" style="width:100%"></div></div>
+        </div>
+        <div class="hp-block" style="text-align:right;">
+          <div class="hp-label"><span id="botHpText">100</span><span>BOT</span></div>
+          <div class="hp-bar"><div class="hp-fill bot" id="botHpFill" style="width:100%"></div></div>
+        </div>
+      </div>
+      <div class="center-msg" id="centerMsg"></div>
+      <div class="score" id="scoreText" style="align-self:flex-start;">WIN 0 : 0 LOSE</div>
+    </div>
+  </div>
+
+  <div class="panel">
+    <h2>실시간 난이도 조정 (Dynamic Difficulty Adjustment)</h2>
+    <div class="skill-row">
+      <span style="font-size:13px; color:var(--muted);">플레이어 숙련도 점수</span>
+      <span class="value" id="skillValue">0.50</span>
+    </div>
+    <div class="stat-grid" style="margin-top:10px;">
+      <div class="stat">
+        <div class="label">봇 명중률</div>
+        <div class="value" id="statAim">-</div>
+        <div class="bar"><div class="bar-fill" id="barAim" style="width:0%"></div></div>
+      </div>
+      <div class="stat">
+        <div class="label">봇 반응속도</div>
+        <div class="value" id="statReact">-</div>
+        <div class="bar"><div class="bar-fill" id="barReact" style="width:0%"></div></div>
+      </div>
+      <div class="stat">
+        <div class="label">봇 회피확률</div>
+        <div class="value" id="statDodge">-</div>
+        <div class="bar"><div class="bar-fill" id="barDodge" style="width:0%"></div></div>
+      </div>
+      <div class="stat">
+        <div class="label">봇 공격성</div>
+        <div class="value" id="statAggro">-</div>
+        <div class="bar"><div class="bar-fill" id="barAggro" style="width:0%"></div></div>
+      </div>
+    </div>
+  </div>
+
+  <p class="footer">
+    빨간 링이 깜빡이면 봇의 강공격 예고입니다 — 빨리 움직여서 피하면 반응속도 점수가 올라갑니다.
+    이 데모는 명중률·회피율·피해 비율·반응속도를 종합해 숙련도 점수를 계산하고,
+    그 점수로 봇의 명중률/반응지연/회피확률/공격성을 곡선에 따라 조정하는 규칙 기반 난이도 시스템(v1)입니다.
+  </p>
+</div>
+
+<script>
+(function () {
+  const canvas = document.getElementById('stage');
+  const ctx = canvas.getContext('2d');
+  const W = canvas.width, H = canvas.height;
+
+  // ---------- 입력 ----------
+  const keys = {};
+  let mouse = { x: W / 2, y: H / 2, down: false };
+  window.addEventListener('keydown', e => { keys[e.key.toLowerCase()] = true; if (e.key === ' ') e.preventDefault(); });
+  window.addEventListener('keyup', e => { keys[e.key.toLowerCase()] = false; });
+  canvas.addEventListener('mousemove', e => {
+    const r = canvas.getBoundingClientRect();
+    mouse.x = (e.clientX - r.left) * (W / r.width);
+    mouse.y = (e.clientY - r.top) * (H / r.height);
+  });
+  canvas.addEventListener('mousedown', () => { mouse.down = true; });
+  window.addEventListener('mouseup', () => { mouse.down = false; });
+
+  // ---------- 엔티티 ----------
+  const player = { x: 140, y: H / 2, r: 16, hp: 100, maxHp: 100, speed: 190, fireCooldown: 0 };
+  const bot = { x: W - 140, y: H / 2, r: 16, hp: 100, maxHp: 100, fireCooldown: 1.0, vx: 0, vy: 0, targetAngle: 0 };
+  let bullets = [];
+  let wins = 0, losses = 0;
+  let roundOver = false;
+  let roundTimer = 0;
+
+  // ---------- 봇 강공격(텔레그래프) ----------
+  const heavyAttack = {
+    active: false, charging: false, chargeTime: 0, chargeDuration: 0.9,
+    cooldown: 4.0, timer: 2.0, targetX: 0, targetY: 0, reactionStart: 0
+  };
+
+  // ---------- 플레이어 실력 추적 (PlayerSkillTracker.cs 의 JS 버전) ----------
+  const skill = {
+    shotsFired: 0, shotsHit: 0,
+    botShotsFired: 0, botShotsLanded: 0,
+    damageDealt: 0, damageTaken: 0,
+    reactionSamples: [],
+    score: 0.5,
+    bestReaction: 0.15, worstReaction: 0.9,
+    weights: { accuracy: 0.3, evasion: 0.25, damageRatio: 0.25, reaction: 0.2 }
+  };
+
+  function recalcSkill() {
+    const accuracy = skill.shotsFired > 0 ? skill.shotsHit / skill.shotsFired : 0.5;
+    const evasion = skill.botShotsFired > 0 ? 1 - (skill.botShotsLanded / skill.botShotsFired) : 0.5;
+    const totalDmg = skill.damageDealt + skill.damageTaken;
+    const damageRatio = totalDmg > 0.001 ? skill.damageDealt / totalDmg : 0.5;
+
+    let reactionScore = 0.5;
+    if (skill.reactionSamples.length > 0) {
+      const avg = skill.reactionSamples.reduce((a, b) => a + b, 0) / skill.reactionSamples.length;
+      reactionScore = clamp01(inverseLerp(skill.worstReaction, skill.bestReaction, avg));
+    }
+
+    const w = skill.weights;
+    const totalW = w.accuracy + w.evasion + w.damageRatio + w.reaction;
+    const raw = (accuracy * w.accuracy + evasion * w.evasion + damageRatio * w.damageRatio + reactionScore * w.reaction) / totalW;
+
+    skill.score = lerp(skill.score, raw, 0.12);
+  }
+
+  function clamp01(v) { return Math.max(0, Math.min(1, v)); }
+  function lerp(a, b, t) { return a + (b - a) * t; }
+  function inverseLerp(a, b, v) { return (v - a) / (b - a); }
+
+  // 난이도 커브 (DuelDifficultyManager.cs 와 동일한 값)
+  function curve(score, y0, y1) { return lerp(y0, y1, clamp01(score)); }
+  const difficulty = { aim: 0.35, reaction: 0.6, dodge: 0.15, aggro: 0.6 };
+
+  function updateDifficultyFromSkill() {
+    difficulty.aim = curve(skill.score, 0.35, 0.92);
+    difficulty.reaction = curve(skill.score, 0.55, 0.12); // 초 단위, 낮을수록 빠름
+    difficulty.dodge = curve(skill.score, 0.12, 0.7);
+    difficulty.aggro = curve(skill.score, 0.6, 1.5);
+  }
+
+  // ---------- 발사체 ----------
+  function spawnBullet(owner, x, y, angle, speed, damage, heavy) {
+    bullets.push({
+      owner, x, y,
+      vx: Math.cos(angle) * speed, vy: Math.sin(angle) * speed,
+      r: heavy ? 7 : 4, damage, heavy: !!heavy, born: performance.now()
+    });
+  }
+
+  function dist(ax, ay, bx, by) { return Math.hypot(ax - bx, ay - by); }
+
+  // ---------- 라운드 처리 ----------
+  function endRound(playerWon) {
+    roundOver = true;
+    const msg = document.getElementById('centerMsg');
+    msg.textContent = playerWon ? 'WIN' : 'LOSE';
+    msg.className = 'center-msg show';
+    if (playerWon) wins++; else losses++;
+    document.getElementById('scoreText').textContent = `WIN ${wins} : ${losses} LOSE`;
+    setTimeout(resetRound, 1400);
+  }
+
+  function resetRound() {
+    player.hp = player.maxHp;
+    bot.hp = bot.maxHp;
+    player.x = 140; player.y = H / 2;
+    bot.x = W - 140; bot.y = H / 2;
+    bullets = [];
+    heavyAttack.active = false; heavyAttack.charging = false; heavyAttack.timer = 2.0;
+    roundOver = false;
+    document.getElementById('centerMsg').className = 'center-msg';
+  }
+
+  // ---------- 메인 루프 ----------
+  let last = performance.now();
+  function frame(now) {
+    let dt = (now - last) / 1000;
+    dt = Math.min(dt, 0.05);
+    last = now;
+    if (!roundOver) update(dt, now);
+    render();
+    requestAnimationFrame(frame);
+  }
+
+  function update(dt, now) {
+    // --- 플레이어 이동 ---
+    let dx = 0, dy = 0;
+    if (keys['w'] || keys['arrowup']) dy -= 1;
+    if (keys['s'] || keys['arrowdown']) dy += 1;
+    if (keys['a'] || keys['arrowleft']) dx -= 1;
+    if (keys['d'] || keys['arrowright']) dx += 1;
+    const len = Math.hypot(dx, dy) || 1;
+    player.x += (dx / len) * player.speed * dt;
+    player.y += (dy / len) * player.speed * dt;
+    player.x = Math.max(player.r, Math.min(W - player.r, player.x));
+    player.y = Math.max(player.r, Math.min(H - player.r, player.y));
+
+    // --- 플레이어 사격 ---
+    player.fireCooldown -= dt;
+    if ((mouse.down || keys[' ']) && player.fireCooldown <= 0) {
+      const angle = Math.atan2(mouse.y - player.y, mouse.x - player.x);
+      spawnBullet('player', player.x, player.y, angle, 520, 8, false);
+      skill.shotsFired++;
+      player.fireCooldown = 0.28;
+    }
+
+    // --- 봇 이동: 중거리 유지 + 좌우 스트레이프 ---
+    const toPlayer = dist(bot.x, bot.y, player.x, player.y);
+    const desiredDist = 280;
+    let moveX = 0, moveY = 0;
+    const dirX = (player.x - bot.x) / (toPlayer || 1);
+    const dirY = (player.y - bot.y) / (toPlayer || 1);
+    if (toPlayer > desiredDist + 30) { moveX += dirX; moveY += dirY; }
+    else if (toPlayer < desiredDist - 30) { moveX -= dirX; moveY -= dirY; }
+    // 스트레이프 (시간 기반 지그재그)
+    const strafe = Math.sin(now / 500) * 1;
+    moveX += -dirY * strafe * 0.6;
+    moveY += dirX * strafe * 0.6;
+    const mlen = Math.hypot(moveX, moveY) || 1;
+    const botSpeed = 130;
+    bot.x += (moveX / mlen) * botSpeed * dt;
+    bot.y += (moveY / mlen) * botSpeed * dt;
+    bot.x = Math.max(bot.r, Math.min(W - bot.r, bot.x));
+    bot.y = Math.max(bot.r, Math.min(H - bot.r, bot.y));
+
+    // --- 봇 기본 사격 (난이도: 명중률 = 조준 오차, 공격성 = 쿨다운) ---
+    bot.fireCooldown -= dt;
+    if (bot.fireCooldown <= 0) {
+      const baseCooldown = 1.1 / difficulty.aggro;
+      bot.fireCooldown = baseCooldown + Math.random() * 0.3;
+      const trueAngle = Math.atan2(player.y - bot.y, player.x - bot.x);
+      const errorSpread = (1 - difficulty.aim) * 0.5; // 라디안
+      const angle = trueAngle + (Math.random() * 2 - 1) * errorSpread;
+      spawnBullet('bot', bot.x, bot.y, angle, 340, 6, false);
+      skill.botShotsFired++;
+    }
+
+    // --- 봇 강공격 (텔레그래프 -> 반응속도 측정) ---
+    if (!heavyAttack.charging && !heavyAttack.active) {
+      heavyAttack.timer -= dt;
+      if (heavyAttack.timer <= 0) {
+        heavyAttack.charging = true;
+        heavyAttack.chargeTime = 0;
+        heavyAttack.reactionStart = now;
+        heavyAttack.reacted = false;
+        heavyAttack.startPlayerX = player.x;
+        heavyAttack.startPlayerY = player.y;
+      }
+    } else if (heavyAttack.charging) {
+      heavyAttack.chargeTime += dt;
+      // 플레이어가 시작 위치에서 일정 거리 이상 벗어나면 "반응함"으로 기록
+      if (!heavyAttack.reacted) {
+        const moved = dist(player.x, player.y, heavyAttack.startPlayerX, heavyAttack.startPlayerY);
+        if (moved > 40) {
+          heavyAttack.reacted = true;
+          const rt = (now - heavyAttack.reactionStart) / 1000;
+          skill.reactionSamples.push(rt);
+          if (skill.reactionSamples.length > 12) skill.reactionSamples.shift();
+        }
+      }
+      if (heavyAttack.chargeTime >= heavyAttack.chargeDuration) {
+        heavyAttack.charging = false;
+        if (!heavyAttack.reacted) {
+          skill.reactionSamples.push(skill.worstReaction);
+          if (skill.reactionSamples.length > 12) skill.reactionSamples.shift();
+        }
+        const trueAngle = Math.atan2(player.y - bot.y, player.x - bot.x);
+        spawnBullet('bot', bot.x, bot.y, trueAngle, 420, 18, true);
+        skill.botShotsFired++;
+        heavyAttack.timer = heavyAttack.cooldown;
+      }
+    }
+
+    // --- 봇 회피: 자신에게 다가오는 플레이어 총알 감지 ---
+    for (const b of bullets) {
+      if (b.owner !== 'player') continue;
+      const d = dist(b.x, b.y, bot.x, bot.y);
+      if (d < 90 && !bot._dodgeRoll) {
+        bot._dodgeRoll = true;
+        if (Math.random() < difficulty.dodge) {
+          const perp = Math.atan2(b.vy, b.vx) + Math.PI / 2;
+          bot.x += Math.cos(perp) * 26;
+          bot.y += Math.sin(perp) * 26;
+        }
+      }
+    }
+    bot._dodgeRoll = false;
+
+    // --- 총알 이동 & 충돌 ---
+    bullets = bullets.filter(b => {
+      b.x += b.vx * dt; b.y += b.vy * dt;
+      if (b.x < -20 || b.x > W + 20 || b.y < -20 || b.y > H + 20) return false;
+
+      if (b.owner === 'player' && dist(b.x, b.y, bot.x, bot.y) < bot.r + b.r) {
+        bot.hp -= b.damage;
+        skill.shotsHit++;
+        skill.damageDealt += b.damage;
+        if (bot.hp <= 0) endRound(true);
+        return false;
+      }
+      if (b.owner === 'bot' && dist(b.x, b.y, player.x, player.y) < player.r + b.r) {
+        player.hp -= b.damage;
+        skill.botShotsLanded++;
+        skill.damageTaken += b.damage;
+        if (player.hp <= 0) endRound(false);
+        return false;
+      }
+      return true;
+    });
+
+    // --- 주기적으로 실력 점수 & 난이도 갱신 ---
+    roundTimer += dt;
+    if (roundTimer > 0.5) {
+      roundTimer = 0;
+      recalcSkill();
+      updateDifficultyFromSkill();
+      updateHud();
+    }
+  }
+
+  function updateHud() {
+    document.getElementById('playerHpText').textContent = Math.max(0, Math.round(player.hp));
+    document.getElementById('botHpText').textContent = Math.max(0, Math.round(bot.hp));
+    document.getElementById('playerHpFill').style.width = Math.max(0, player.hp) + '%';
+    document.getElementById('botHpFill').style.width = Math.max(0, bot.hp) + '%';
+
+    document.getElementById('skillValue').textContent = skill.score.toFixed(2);
+    setStat('Aim', Math.round(difficulty.aim * 100) + '%', difficulty.aim);
+    setStat('React', Math.round(difficulty.reaction * 1000) + 'ms', 1 - inverseLerp(0.1, 0.6, difficulty.reaction));
+    setStat('Dodge', Math.round(difficulty.dodge * 100) + '%', difficulty.dodge);
+    setStat('Aggro', difficulty.aggro.toFixed(2) + 'x', clamp01((difficulty.aggro - 0.5) / 1.1));
+  }
+
+  function setStat(key, text, ratio) {
+    document.getElementById('stat' + key).textContent = text;
+    document.getElementById('bar' + key).style.width = Math.round(clamp01(ratio) * 100) + '%';
+  }
+
+  // ---------- 렌더 ----------
+  function render() {
+    ctx.clearRect(0, 0, W, H);
+
+    // 배경 그리드
+    ctx.fillStyle = '#0a0d12';
+    ctx.fillRect(0, 0, W, H);
+    ctx.strokeStyle = 'rgba(255,255,255,0.04)';
+    for (let x = 0; x < W; x += 40) { ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, H); ctx.stroke(); }
+    for (let y = 0; y < H; y += 40) { ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(W, y); ctx.stroke(); }
+
+    // 강공격 텔레그래프
+    if (heavyAttack.charging) {
+      const t = heavyAttack.chargeTime / heavyAttack.chargeDuration;
+      const pulse = 0.5 + 0.5 * Math.sin(performance.now() / 60);
+      ctx.beginPath();
+      ctx.arc(bot.x, bot.y, 28 + t * 10, 0, Math.PI * 2);
+      ctx.strokeStyle = `rgba(255,92,122,${0.4 + 0.5 * pulse})`;
+      ctx.lineWidth = 3;
+      ctx.stroke();
+    }
+
+    // 총알
+    for (const b of bullets) {
+      ctx.beginPath();
+      ctx.arc(b.x, b.y, b.r, 0, Math.PI * 2);
+      ctx.fillStyle = b.owner === 'player' ? '#bfe0ff' : (b.heavy ? '#ff5c7a' : '#ffb3c1');
+      ctx.fill();
+    }
+
+    drawEntity(player.x, player.y, player.r, '#4da3ff', mouse.x, mouse.y);
+    drawEntity(bot.x, bot.y, bot.r, '#ff5c7a', player.x, player.y);
+  }
+
+  function drawEntity(x, y, r, color, faceX, faceY) {
+    ctx.beginPath();
+    ctx.arc(x, y, r, 0, Math.PI * 2);
+    ctx.fillStyle = color;
+    ctx.fill();
+    const angle = Math.atan2(faceY - y, faceX - x);
+    ctx.beginPath();
+    ctx.moveTo(x + Math.cos(angle) * r, y + Math.sin(angle) * r);
+    ctx.lineTo(x + Math.cos(angle) * (r + 10), y + Math.sin(angle) * (r + 10));
+    ctx.strokeStyle = color;
+    ctx.lineWidth = 3;
+    ctx.stroke();
+  }
+
+  updateHud();
+  requestAnimationFrame(frame);
+})();
+</script>
+</body>
+</html>
