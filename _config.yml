@@ -1,0 +1,41 @@
+title: "내 블로그"
+subtitle: "게임과 AI 에이전트로 노는 개발 공간"
+description: "게임 이야기와 AI 에이전트를 활용한 개발 기록을 남기는 블로그"
+
+url: "https://lezo-jong.github.io"
+baseurl: "/my-blog"   # 저장소 이름이 my-blog인 프로젝트 페이지 기준. 저장소 이름이 다르면 여기를 맞춰주세요.
+
+author: "종민"
+
+# 상단 네비게이션
+nav:
+  - text: Home
+    url: /
+  - text: Game
+    url: /game/
+  - text: AI Agent
+    url: /ai-agent/
+  - text: About
+    url: /about/
+
+# 카테고리는 예시 글에서 game / ai-agent 두 가지를 사용합니다.
+# 새 글을 쓸 때 front matter의 categories 값으로 나뉩니다.
+
+markdown: kramdown
+highlighter: rouge
+permalink: pretty
+
+paginate: 6
+paginate_path: "/page:num/"
+
+plugins:
+  - jekyll-feed
+  - jekyll-seo-tag
+  - jekyll-paginate
+
+exclude:
+  - Gemfile
+  - Gemfile.lock
+  - README.md
+  - vendor/
+  - node_modules/

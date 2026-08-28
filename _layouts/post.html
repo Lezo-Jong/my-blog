@@ -1,0 +1,14 @@
+---
+layout: default
+---
+<article>
+  <div class="post-header">
+    {% if page.categories contains 'game' %}<span class="tag tag-game">GAME</span>{% endif %}
+    {% if page.categories contains 'ai-agent' %}<span class="tag tag-ai-agent">AI AGENT</span>{% endif %}
+    <h1 class="post-title">{{ page.title }}</h1>
+    <div class="post-meta">{{ page.date | date: "%Y년 %m월 %d일" }}</div>
+  </div>
+  <div class="post-content">
+    {{ content }}
+  </div>
+</article>

@@ -1,0 +1,16 @@
+---
+layout: default
+---
+<h1 class="post-title" style="font-size:24px; margin-bottom:24px;">{{ page.title }}</h1>
+<ul class="post-list">
+  {% assign cat_posts = site.categories[page.category] %}
+  {% for post in cat_posts %}
+  <li class="post-card">
+    <h2 class="post-card-title"><a href="{{ post.url | relative_url }}">{{ post.title }}</a></h2>
+    <div class="post-meta">{{ post.date | date: "%Y.%m.%d" }}</div>
+    <p class="post-excerpt">{{ post.excerpt | strip_html | truncate: 110 }}</p>
+  </li>
+  {% else %}
+  <li class="post-card">아직 이 카테고리에 쓴 글이 없어요. 곧 채워질 예정입니다.</li>
+  {% endfor %}
+</ul>
