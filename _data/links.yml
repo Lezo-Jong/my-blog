@@ -1,23 +1,12 @@
 # 홈페이지 오른쪽 위키(즐겨찾기) 사이드바에 표시되는 링크 목록입니다.
-# category 아래 items에 title / url을 추가하면 바로 반영됩니다.
+# category 아래 items에 title과 함께 url(외부 링크) 또는 post_id(블로그 글)를 넣으면 됩니다.
+# post_id는 _posts 파일명에서 날짜를 뺀 부분입니다. (예: _posts/2026-08-31-foo.md -> /2026/08/31/foo)
 
-- category: "Unity"
+- category: "즐겨찾기"
   items:
-    - title: "Unity 공식 문서"
-      url: "https://docs.unity3d.com/Manual/index.html"
-    - title: "Unity Learn"
-      url: "https://learn.unity.com/"
-
-- category: "AI / LLM"
-  items:
-    - title: "Claude 공식 문서"
-      url: "https://docs.claude.com/"
-    - title: "OpenAI Cookbook"
-      url: "https://cookbook.openai.com/"
-
-- category: "참고자료"
-  items:
-    - title: "MDN Web Docs"
-      url: "https://developer.mozilla.org/ko/"
     - title: "GitHub"
       url: "https://github.com/"
+    - title: "정적인 Unity NPC를 '플레이어 로그를 읽는 에이전트'로 바꾸기"
+      post_id: "/2026/08/31/unity-npc-agent-hci-example"
+    - title: "0.5초 걸리는 AI를 60FPS 게임에 넣기 (LLM·에이전트 개념 정리)"
+      post_id: "/2026/08/31/llm-game-agent-latency"

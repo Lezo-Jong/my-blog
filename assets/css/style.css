@@ -177,7 +177,9 @@ main { position: relative; z-index: 3; padding: 48px 0 90px; }
   justify-content: space-between;
   gap: 12px;
   margin-bottom: 28px;
-  padding-bottom: 14px;
+  /* 헤더 하단 선(main padding-top 48px)과 이 아래 포스트 선(border-bottom) 사이 정중앙에
+     제목이 오도록, 위/아래 여백을 동일하게 맞춘다 */
+  padding-bottom: 48px;
   border-bottom: 3px solid var(--accent-game);
 }
 

@@ -1,5 +1,5 @@
 <header class="site-header">
-  <div class="wrap header-inner">
+  <div class="wrap header-inner{% if page.layout == 'home' %} wrap--wide{% endif %}">
     <a class="brand" href="{{ '/' | relative_url }}">{{ site.title }}</a>
     <p class="brand-sub">{{ site.subtitle }}</p>
     <nav class="site-nav">
