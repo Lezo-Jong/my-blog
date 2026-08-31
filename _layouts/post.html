@@ -1,12 +1,13 @@
 ---
 layout: default
 ---
-<article class="post" data-cat="{% if page.categories contains 'game' %}game{% elsif page.categories contains 'ai-agent' %}ai-agent{% endif %}">
+<article class="post" data-cat="{% if page.categories contains 'game' %}game{% elsif page.categories contains 'ai-agent' %}ai-agent{% elsif page.categories contains 'git' %}git{% endif %}">
   <div class="post-header">
     <a class="back-link" href="{{ '/' | relative_url }}">&larr; index</a>
     <div class="post-tags">
       {% if page.categories contains 'game' %}<span class="tag tag-game">GAME</span>{% endif %}
       {% if page.categories contains 'ai-agent' %}<span class="tag tag-ai-agent">AI_AGENT</span>{% endif %}
+      {% if page.categories contains 'git' %}<span class="tag tag-git">GIT</span>{% endif %}
     </div>
     <h1 class="post-title">{{ page.title }}</h1>
     <div class="post-meta">// {{ page.date | date: "%Y.%m.%d" }} 기록</div>

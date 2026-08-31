@@ -2,7 +2,7 @@
 layout: post
 title: "0.5초 걸리는 AI를 60FPS 게임에 넣기: 시간 축을 셋으로 쪼갠 이유"
 date: 2026-08-31 11:50:00 +0900
-categories: [GameDev, AI]
+categories: [ai-agent]
 tags: [unity, llm, game-ai, agent, latency]
 mermaid: true
 ---

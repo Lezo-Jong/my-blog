@@ -17,6 +17,8 @@
   --accent-game-fg: #2a1500;
   --accent-ai: #39ff9d;
   --accent-ai-fg: #00260f;
+  --accent-git: #f05033;
+  --accent-git-fg: #2a0800;
   --accent: var(--accent-game);
 
   --font-display: "Black Han Sans", "Apple SD Gothic Neo", sans-serif;
@@ -198,6 +200,9 @@ main { position: relative; z-index: 3; padding: 48px 0 90px; }
 .board[data-cat="game"] .board-head,
 .post-card[data-cat="game"],
 .post[data-cat="game"] { --cat-accent: var(--accent-game); }
+.board[data-cat="git"] .board-head,
+.post-card[data-cat="git"],
+.post[data-cat="git"] { --cat-accent: var(--accent-git); }
 .board[data-cat] .board-head { border-bottom-color: var(--cat-accent, var(--accent-game)); }
 
 .board-title {
@@ -292,6 +297,7 @@ main { position: relative; z-index: 3; padding: 48px 0 90px; }
 
 .tag-game { color: var(--accent-game); }
 .tag-ai-agent { color: var(--accent-ai); }
+.tag-git { color: var(--accent-git); }
 
 /* pagination */
 .pagination {
