@@ -92,6 +92,10 @@ a:hover { text-decoration: underline; text-underline-offset: 3px; }
   padding: 0 24px;
 }
 
+.wrap--wide {
+  max-width: 1080px;
+}
+
 /* ==========================================================================
    HEADER
    ========================================================================== */
@@ -302,6 +306,95 @@ main { position: relative; z-index: 3; padding: 48px 0 90px; }
 }
 
 /* ==========================================================================
+   HOME GRID / WIKI SIDEBAR
+   ========================================================================== */
+
+.home-grid {
+  display: grid;
+  grid-template-columns: 1fr 260px;
+  align-items: start;
+  gap: 40px;
+}
+
+.home-main { min-width: 0; }
+
+.wiki-sidebar {
+  position: sticky;
+  top: 24px;
+  border: 2px solid var(--border-strong);
+  background: var(--bg-raised);
+  box-shadow: var(--shadow-hard);
+  padding: 20px;
+}
+
+.wiki-head {
+  margin-bottom: 18px;
+  padding-bottom: 12px;
+  border-bottom: 3px solid var(--accent-ai);
+}
+
+.wiki-title {
+  font-family: var(--font-display);
+  font-size: 20px;
+  letter-spacing: 0.5px;
+  margin: 0;
+  color: var(--fg);
+}
+
+.wiki-sub {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--muted);
+  margin: 6px 0 0;
+}
+
+.wiki-group + .wiki-group { margin-top: 20px; }
+
+.wiki-group-title {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin: 0 0 8px;
+}
+
+.wiki-links {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  font-size: 14px;
+}
+
+.wiki-links li {
+  border-top: 1px dashed var(--border);
+}
+
+.wiki-links li:first-child { border-top: none; }
+
+.wiki-links a {
+  display: block;
+  padding: 8px 0;
+  color: var(--fg);
+  transition: color 0.15s ease, transform 0.15s ease;
+}
+
+.wiki-links a:hover {
+  color: var(--accent-ai);
+  text-decoration: none;
+  transform: translateX(4px);
+}
+
+.wiki-links a::before {
+  content: "> ";
+  font-family: var(--font-mono);
+  color: var(--muted-dim);
+}
+
+.wiki-links a:hover::before { color: var(--accent-ai); }
+
+/* ==========================================================================
    SINGLE POST
    ========================================================================== */
 
@@ -477,6 +570,11 @@ main { position: relative; z-index: 3; padding: 48px 0 90px; }
 /* ==========================================================================
    RESPONSIVE
    ========================================================================== */
+
+@media (max-width: 860px) {
+  .home-grid { grid-template-columns: 1fr; gap: 28px; }
+  .wiki-sidebar { position: static; }
+}
 
 @media (max-width: 560px) {
   body { font-size: 16px; }
