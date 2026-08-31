@@ -7,10 +7,12 @@ layout: default
     <h1 class="board-title">{{ page.title | upcase }}</h1>
     <span class="board-count">{{ cat_posts | size }} entries</span>
   </div>
+  {% assign total_cat_posts = cat_posts | size %}
   <ol class="post-list">
     {% for post in cat_posts %}
+    {% assign post_index = total_cat_posts | minus: forloop.index | plus: 1 %}
     <li class="post-card" data-cat="{{ page.category }}">
-      <span class="post-index">{{ "00" | append: forloop.index | slice: -2, 2 }}</span>
+      <span class="post-index">{{ "00" | append: post_index | slice: -2, 2 }}</span>
       <div class="post-card-body">
         <div class="post-card-top">
           <span class="post-meta">{{ post.date | date: "%Y.%m.%d" }}</span>

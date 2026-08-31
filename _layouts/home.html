@@ -6,10 +6,14 @@ layout: default
     <h1 class="board-title">LATEST_LOGS</h1>
     <span class="board-count">{{ paginator.posts | size }} entries</span>
   </div>
+  {% assign total_posts = site.posts | size %}
+  {% assign page_offset = paginator.page | minus: 1 | times: paginator.per_page %}
   <ol class="post-list">
     {% for post in paginator.posts %}
+    {% assign rank_from_newest = page_offset | plus: forloop.index %}
+    {% assign post_index = total_posts | minus: rank_from_newest | plus: 1 %}
     <li class="post-card" data-cat="{% if post.categories contains 'game' %}game{% elsif post.categories contains 'ai-agent' %}ai-agent{% endif %}">
-      <span class="post-index">{{ "00" | append: forloop.index | slice: -2, 2 }}</span>
+      <span class="post-index">{{ "00" | append: post_index | slice: -2, 2 }}</span>
       <div class="post-card-body">
         <div class="post-card-top">
           {% if post.categories contains 'game' %}<span class="tag tag-game">GAME</span>{% endif %}
