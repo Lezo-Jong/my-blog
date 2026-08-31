@@ -1,0 +1,23 @@
+# 홈페이지 오른쪽 위키(즐겨찾기) 사이드바에 표시되는 링크 목록입니다.
+# category 아래 items에 title / url을 추가하면 바로 반영됩니다.
+
+- category: "Unity"
+  items:
+    - title: "Unity 공식 문서"
+      url: "https://docs.unity3d.com/Manual/index.html"
+    - title: "Unity Learn"
+      url: "https://learn.unity.com/"
+
+- category: "AI / LLM"
+  items:
+    - title: "Claude 공식 문서"
+      url: "https://docs.claude.com/"
+    - title: "OpenAI Cookbook"
+      url: "https://cookbook.openai.com/"
+
+- category: "참고자료"
+  items:
+    - title: "MDN Web Docs"
+      url: "https://developer.mozilla.org/ko/"
+    - title: "GitHub"
+      url: "https://github.com/"

@@ -1,0 +1,16 @@
+<aside class="wiki-sidebar">
+  <div class="wiki-head">
+    <h2 class="wiki-title">WIKI</h2>
+    <p class="wiki-sub">자주 쓰는 자료 모음</p>
+  </div>
+  {% for group in site.data.links %}
+  <div class="wiki-group">
+    <h3 class="wiki-group-title">{{ group.category }}</h3>
+    <ul class="wiki-links">
+      {% for link in group.items %}
+      <li><a href="{{ link.url }}" target="_blank" rel="noopener noreferrer">{{ link.title }}</a></li>
+      {% endfor %}
+    </ul>
+  </div>
+  {% endfor %}
+</aside>

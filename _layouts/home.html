@@ -1,40 +1,46 @@
 ---
 layout: default
 ---
-<section class="board">
-  <div class="board-head">
-    <h1 class="board-title">LATEST_LOGS</h1>
-    <span class="board-count">{{ paginator.posts | size }} entries</span>
-  </div>
-  {% assign total_posts = site.posts | size %}
-  {% assign page_offset = paginator.page | minus: 1 | times: paginator.per_page %}
-  <ol class="post-list">
-    {% for post in paginator.posts %}
-    {% assign rank_from_newest = page_offset | plus: forloop.index %}
-    {% assign post_index = total_posts | minus: rank_from_newest | plus: 1 %}
-    <li class="post-card" data-cat="{% if post.categories contains 'game' %}game{% elsif post.categories contains 'ai-agent' %}ai-agent{% endif %}">
-      <span class="post-index">{{ "00" | append: post_index | slice: -2, 2 }}</span>
-      <div class="post-card-body">
-        <div class="post-card-top">
-          {% if post.categories contains 'game' %}<span class="tag tag-game">GAME</span>{% endif %}
-          {% if post.categories contains 'ai-agent' %}<span class="tag tag-ai-agent">AI_AGENT</span>{% endif %}
-          <span class="post-meta">{{ post.date | date: "%Y.%m.%d" }}</span>
-        </div>
-        <h2 class="post-card-title"><a href="{{ post.url | relative_url }}">{{ post.title }}</a></h2>
-        <p class="post-excerpt">{{ post.excerpt | strip_html | truncate: 110 }}</p>
+<div class="home-grid">
+  <div class="home-main">
+    <section class="board">
+      <div class="board-head">
+        <h1 class="board-title">LATEST_LOGS</h1>
+        <span class="board-count">{{ paginator.posts | size }} entries</span>
       </div>
-    </li>
-    {% endfor %}
-  </ol>
-</section>
+      {% assign total_posts = site.posts | size %}
+      {% assign page_offset = paginator.page | minus: 1 | times: paginator.per_page %}
+      <ol class="post-list">
+        {% for post in paginator.posts %}
+        {% assign rank_from_newest = page_offset | plus: forloop.index %}
+        {% assign post_index = total_posts | minus: rank_from_newest | plus: 1 %}
+        <li class="post-card" data-cat="{% if post.categories contains 'game' %}game{% elsif post.categories contains 'ai-agent' %}ai-agent{% endif %}">
+          <span class="post-index">{{ "00" | append: post_index | slice: -2, 2 }}</span>
+          <div class="post-card-body">
+            <div class="post-card-top">
+              {% if post.categories contains 'game' %}<span class="tag tag-game">GAME</span>{% endif %}
+              {% if post.categories contains 'ai-agent' %}<span class="tag tag-ai-agent">AI_AGENT</span>{% endif %}
+              <span class="post-meta">{{ post.date | date: "%Y.%m.%d" }}</span>
+            </div>
+            <h2 class="post-card-title"><a href="{{ post.url | relative_url }}">{{ post.title }}</a></h2>
+            <p class="post-excerpt">{{ post.excerpt | strip_html | truncate: 110 }}</p>
+          </div>
+        </li>
+        {% endfor %}
+      </ol>
+    </section>
 
-{% if paginator.total_pages > 1 %}
-<div class="pagination">
-  {% if paginator.previous_page %}
-    <a href="{{ paginator.previous_page_path | relative_url }}" class="page-btn">&larr; 이전 글</a>
-  {% else %}<span></span>{% endif %}
-  {% if paginator.next_page %}
-    <a href="{{ paginator.next_page_path | relative_url }}" class="page-btn">다음 글 &rarr;</a>
-  {% endif %}
+    {% if paginator.total_pages > 1 %}
+    <div class="pagination">
+      {% if paginator.previous_page %}
+        <a href="{{ paginator.previous_page_path | relative_url }}" class="page-btn">&larr; 이전 글</a>
+      {% else %}<span></span>{% endif %}
+      {% if paginator.next_page %}
+        <a href="{{ paginator.next_page_path | relative_url }}" class="page-btn">다음 글 &rarr;</a>
+      {% endif %}
+    </div>
+    {% endif %}
+  </div>
+
+  {% include wiki-sidebar.html %}
 </div>
-{% endif %}
