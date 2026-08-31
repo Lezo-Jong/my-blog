@@ -19,6 +19,7 @@
   --accent-ai-fg: #00260f;
   --accent-git: #c063ff;
   --accent-git-fg: #1c0033;
+  --accent-betelgeuse: #ff3d1a; /* 오리온자리 베텔기우스 - 붉은 초거성 색감 */
   --accent: var(--accent-game);
 
   --font-display: "Black Han Sans", "Apple SD Gothic Neo", sans-serif;
@@ -191,7 +192,7 @@ main { position: relative; z-index: 3; padding: 48px 0 90px; }
      그 아래 선(border-bottom)은 글자와 붙도록 padding-bottom을 줄인다 */
   padding-top: 20px;
   padding-bottom: 6px;
-  border-bottom: 3px solid var(--accent-game);
+  border-bottom: 3px solid var(--accent-betelgeuse);
 }
 
 .board[data-cat="ai-agent"] .board-head,
@@ -347,7 +348,7 @@ main { position: relative; z-index: 3; padding: 48px 0 90px; }
 .wiki-head {
   margin-bottom: 18px;
   padding-bottom: 12px;
-  border-bottom: 3px solid var(--accent-ai);
+  border-bottom: 3px solid var(--accent-betelgeuse);
 }
 
 .wiki-title {
