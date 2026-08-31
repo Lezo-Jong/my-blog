@@ -17,8 +17,8 @@
   --accent-game-fg: #2a1500;
   --accent-ai: #39ff9d;
   --accent-ai-fg: #00260f;
-  --accent-git: #f05033;
-  --accent-git-fg: #2a0800;
+  --accent-git: #c063ff;
+  --accent-git-fg: #1c0033;
   --accent: var(--accent-game);
 
   --font-display: "Black Han Sans", "Apple SD Gothic Neo", sans-serif;
