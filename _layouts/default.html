@@ -5,15 +5,44 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>{% if page.title %}{{ page.title }} · {% endif %}{{ site.title }}</title>
   <meta name="description" content="{{ page.excerpt | default: site.description | strip_html | strip_newlines | truncate: 160 }}">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans+KR:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="{{ '/assets/css/style.css' | relative_url }}">
   {% feed_meta %}
   {% seo %}
 </head>
 <body>
+  <div class="crt-scanlines" aria-hidden="true"></div>
+  <div class="crt-grain" aria-hidden="true"></div>
   {% include header.html %}
   <main class="wrap">
     {{ content }}
   </main>
   {% include footer.html %}
+  {% if page.mermaid %}
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@10.9.1/dist/mermaid.min.js"></script>
+  <script>
+    document.querySelectorAll('div.language-mermaid').forEach(function (wrap) {
+      var code = wrap.querySelector('code');
+      var div = document.createElement('div');
+      div.className = 'mermaid';
+      div.textContent = code ? code.textContent : wrap.textContent;
+      wrap.replaceWith(div);
+    });
+    mermaid.initialize({
+      startOnLoad: true,
+      theme: 'dark',
+      themeVariables: {
+        background: '#14171c',
+        primaryColor: '#14171c',
+        primaryTextColor: '#f2ede2',
+        primaryBorderColor: '#39ff9d',
+        lineColor: '#8b909a',
+        fontFamily: 'IBM Plex Mono, monospace'
+      }
+    });
+  </script>
+  {% endif %}
 </body>
 </html>

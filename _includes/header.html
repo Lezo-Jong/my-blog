@@ -1,12 +1,14 @@
 <header class="site-header">
-  <div class="wrap">
-    <a class="site-title" href="{{ '/' | relative_url }}">
-      {{ site.title }}
-      <span class="site-subtitle">{{ site.subtitle }}</span>
+  <div class="wrap header-inner">
+    <a class="brand" href="{{ '/' | relative_url }}">
+      <span class="brand-mark">./</span>{{ site.title }}<span class="brand-cursor">_</span>
     </a>
+    <p class="brand-sub">// {{ site.subtitle }}</p>
     <nav class="site-nav">
       {% for item in site.nav %}
-        <a href="{{ item.url | relative_url }}"{% if page.url == item.url %} class="active"{% endif %}>{{ item.text }}</a>
+        <a href="{{ item.url | relative_url }}" class="nav-link{% if page.url == item.url %} is-active{% endif %}">
+          <span class="nav-bracket">[</span>{{ item.text }}<span class="nav-bracket">]</span>
+        </a>
       {% endfor %}
     </nav>
   </div>
