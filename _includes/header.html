@@ -1,7 +1,9 @@
 <header class="site-header">
   <div class="wrap header-inner{% if page.layout == 'home' %} wrap--wide{% endif %}">
-    <a class="brand" href="{{ '/' | relative_url }}">{{ site.title }}</a>
-    <p class="brand-sub">{{ site.subtitle }}</p>
+    <div class="brand-block">
+      <a class="brand" href="{{ '/' | relative_url }}">{{ site.title }}</a>
+      <p class="brand-sub">{{ site.subtitle }}</p>
+    </div>
     <nav class="site-nav">
       {% for item in site.nav %}
         <a href="{{ item.url | relative_url }}" class="nav-link{% if page.url == item.url %} is-active{% endif %}">

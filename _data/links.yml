@@ -1,12 +1,11 @@
 # 홈페이지 오른쪽 위키(즐겨찾기) 사이드바에 표시되는 링크 목록입니다.
-# category 아래 items에 title과 함께 url(외부 링크) 또는 post_id(블로그 글)를 넣으면 됩니다.
-# post_id는 _posts 파일명에서 날짜를 뺀 부분입니다. (예: _posts/2026-08-31-foo.md -> /2026/08/31/foo)
+# category 아래 items에 title / url을 추가하면 바로 반영됩니다. (전부 외부 링크, 새 탭으로 열림)
 
 - category: "즐겨찾기"
   items:
     - title: "GitHub"
       url: "https://github.com/"
-    - title: "정적인 Unity NPC를 '플레이어 로그를 읽는 에이전트'로 바꾸기"
-      post_id: "/2026/08/31/unity-npc-agent-hci-example"
-    - title: "0.5초 걸리는 AI를 60FPS 게임에 넣기 (LLM·에이전트 개념 정리)"
-      post_id: "/2026/08/31/llm-game-agent-latency"
+    - title: "Unity 매뉴얼 - Unity에서 작업하는 방식"
+      url: "https://docs.unity3d.com/kr/current/Manual/UnityOverview.html"
+    - title: "AWS - 대규모 언어 모델(LLM)이란?"
+      url: "https://aws.amazon.com/ko/what-is/large-language-model/"

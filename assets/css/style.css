@@ -109,7 +109,15 @@ a:hover { text-decoration: underline; text-underline-offset: 3px; }
     linear-gradient(180deg, rgba(255, 138, 30, 0.06), transparent 70%);
 }
 
-.header-inner { display: block; }
+.header-inner {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px 24px;
+}
+
+.brand-block { min-width: 0; }
 
 .brand {
   display: inline-flex;
@@ -128,7 +136,7 @@ a:hover { text-decoration: underline; text-underline-offset: 3px; }
   font-size: 13px;
   color: var(--muted);
   letter-spacing: 0.3px;
-  margin: 8px 0 22px;
+  margin: 8px 0 0;
   animation: fade-up 0.5s ease 0.08s both;
 }
 
@@ -177,9 +185,10 @@ main { position: relative; z-index: 3; padding: 48px 0 90px; }
   justify-content: space-between;
   gap: 12px;
   margin-bottom: 28px;
-  /* 헤더 하단 선(main padding-top 48px)과 이 아래 포스트 선(border-bottom) 사이 정중앙에
-     제목이 오도록, 위/아래 여백을 동일하게 맞춘다 */
-  padding-bottom: 48px;
+  /* 선(border-bottom) 위치는 고정한 채, 제목 텍스트만 살짝 아래로 내리기 위해
+     padding-top을 주고 그만큼 padding-bottom을 줄인다 (합계 48px 유지) */
+  padding-top: 14px;
+  padding-bottom: 34px;
   border-bottom: 3px solid var(--accent-game);
 }
 
