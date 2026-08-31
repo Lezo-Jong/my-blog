@@ -8,12 +8,7 @@
     <h3 class="wiki-group-title">{{ group.category }}</h3>
     <ul class="wiki-links">
       {% for link in group.items %}
-      {% if link.post_id %}
-        {% assign linked_post = site.posts | where: "id", link.post_id | first %}
-        <li><a href="{{ linked_post.url | relative_url }}">{{ link.title }}</a></li>
-      {% else %}
-        <li><a href="{{ link.url }}" target="_blank" rel="noopener noreferrer">{{ link.title }}</a></li>
-      {% endif %}
+      <li><a href="{{ link.url }}" target="_blank" rel="noopener noreferrer">{{ link.title }}</a></li>
       {% endfor %}
     </ul>
   </div>

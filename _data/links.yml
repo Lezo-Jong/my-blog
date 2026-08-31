@@ -1,6 +1,5 @@
 # 홈페이지 오른쪽 위키(즐겨찾기) 사이드바에 표시되는 링크 목록입니다.
-# category 아래 items에 title과 함께 url(외부 링크, 새 탭) 또는 post_id(블로그 글, Jekyll이 실제 주소를 찾아 연결)를 넣습니다.
-# post_id는 _posts 파일명에서 날짜를 뺀 부분입니다. (예: _posts/2026-08-31-foo.md -> /2026/08/31/foo)
+# category 아래 items에 title / url을 추가하면 바로 반영됩니다. (전부 외부 링크, 새 탭으로 열림)
 
 - category: "즐겨찾기"
   items:
@@ -8,5 +7,5 @@
       url: "https://github.com/"
     - title: "Unity Essentials Pathway - 유니티 기본 학습 경로"
       url: "https://learn.unity.com/pathway/unity-essentials"
-    - title: "0.5초 걸리는 AI를 60FPS 게임에 넣기 (L0/L1/L2 계층 설계)"
-      post_id: "/2026/08/31/llm-game-agent-latency"
+    - title: "포섭 구조(Subsumption Architecture) - 반사/전술/전략 계층 이론"
+      url: "https://en.wikipedia.org/wiki/Subsumption_architecture"
