@@ -187,7 +187,7 @@ main { position: relative; z-index: 3; padding: 48px 0 90px; }
   margin-bottom: 28px;
   /* 제목 텍스트는 위쪽 여백(padding-top)으로 아래로 내리고,
      그 아래 선(border-bottom)은 글자와 붙도록 padding-bottom을 줄인다 */
-  padding-top: 30px;
+  padding-top: 20px;
   padding-bottom: 6px;
   border-bottom: 3px solid var(--accent-game);
 }
