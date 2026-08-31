@@ -185,10 +185,10 @@ main { position: relative; z-index: 3; padding: 48px 0 90px; }
   justify-content: space-between;
   gap: 12px;
   margin-bottom: 28px;
-  /* 선(border-bottom) 위치는 고정한 채, 제목 텍스트만 아래로 내리기 위해
-     padding-top을 주고 그만큼 padding-bottom을 줄인다 (합계 48px 유지) */
+  /* 제목 텍스트는 위쪽 여백(padding-top)으로 아래로 내리고,
+     그 아래 선(border-bottom)은 글자와 붙도록 padding-bottom을 줄인다 */
   padding-top: 30px;
-  padding-bottom: 18px;
+  padding-bottom: 6px;
   border-bottom: 3px solid var(--accent-game);
 }
 
