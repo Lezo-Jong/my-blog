@@ -304,7 +304,7 @@ main { position: relative; z-index: 3; padding: 48px 0 90px; }
 .pagination {
   display: flex;
   justify-content: space-between;
-  margin-top: 36px;
+  margin-top: 18px;
 }
 
 .page-btn {
