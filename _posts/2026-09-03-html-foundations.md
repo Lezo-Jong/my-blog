@@ -1,7 +1,6 @@
 ---
 layout: post
 title: "HTML 기초: 웹페이지의 뼈대 이해하기"
-date: 2026-09-03 14:30:00 +0900
 categories: [git]
 tags: [html, beginner, web-fundamentals]
 ---

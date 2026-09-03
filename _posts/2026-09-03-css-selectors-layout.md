@@ -1,7 +1,7 @@
 ---
 layout: post
 title: "CSS 완전 정복: 선택자부터 레이아웃까지"
-date: 2026-09-03 15:00:00 +0900
+date: 2026-09-03 13:00:00 +0900
 categories: [git]
 tags: [css, selectors, layout, flexbox, grid, beginner]
 ---
