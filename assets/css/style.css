@@ -221,7 +221,7 @@ main { position: relative; z-index: 3; padding: 48px 0 90px; }
   padding-bottom: 4px;
 }
 
-.post-list { list-style: none; margin: 0 0 12px 0; padding: 0; }
+.post-list { list-style: none; margin: 0 0 28px 0; padding: 0; }
 
 .post-card {
   --cat-accent: var(--accent-game);
@@ -304,7 +304,7 @@ main { position: relative; z-index: 3; padding: 48px 0 90px; }
 .pagination {
   display: flex;
   justify-content: space-between;
-  margin-top: 8px;
+  margin-top: 0;
 }
 
 .page-btn {
