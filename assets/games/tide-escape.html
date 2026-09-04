@@ -1,0 +1,888 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="color-scheme" content="dark">
+<title>만조까지 10분</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Gothic+A1:wght@700;900&family=IBM+Plex+Sans+KR:wght@400;500;600&family=IBM+Plex+Mono:wght@400;600&display=swap">
+<style>
+  :root{
+    --abyss:#071016;
+    --deck:#0D1C23;
+    --deck2:#14282F;
+    --rule:#1F3A43;
+    --rule-soft:#152C34;
+    --foam:#DDEAE5;
+    --muted:#7C9AA0;
+    --dim:#54737A;
+    --brass:#E0A455;
+    --brass-dim:#8A6733;
+    --danger:#E2513F;
+    --safe:#4FB58B;
+    --mono:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
+    --body:"IBM Plex Sans KR","Apple SD Gothic Neo",system-ui,sans-serif;
+    --display:"Gothic A1","Apple SD Gothic Neo",system-ui,sans-serif;
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0;
+    background:var(--abyss);
+    background-image:
+      radial-gradient(ellipse 120% 80% at 50% -10%, #0F2730 0%, rgba(15,39,48,0) 60%),
+      linear-gradient(180deg,#071016 0%,#050C11 100%);
+    background-attachment:fixed;
+    color:var(--foam);
+    font-family:var(--body);
+    font-size:15px;
+    line-height:1.6;
+    -webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:1080px;margin:0 auto;padding:20px 18px 48px}
+
+  /* ---------- masthead ---------- */
+  .masthead{
+    display:flex;align-items:baseline;justify-content:space-between;
+    gap:16px;flex-wrap:wrap;
+    border-bottom:1px solid var(--rule);padding-bottom:12px;margin-bottom:18px;
+  }
+  .brand{display:flex;align-items:baseline;gap:12px}
+  .brand h1{
+    font-family:var(--display);font-weight:900;font-size:20px;letter-spacing:-.01em;
+    margin:0;color:var(--foam);
+  }
+  .brand .sub{font-family:var(--mono);font-size:11px;letter-spacing:.14em;color:var(--dim);text-transform:uppercase}
+  .best{font-family:var(--mono);font-size:12px;color:var(--muted)}
+  .best b{color:var(--brass);font-weight:600}
+
+  /* ---------- title screen ---------- */
+  .title-card{
+    border:1px solid var(--rule);background:var(--deck);
+    padding:40px 32px;text-align:center;
+  }
+  .title-card .kicker{
+    font-family:var(--mono);font-size:11px;letter-spacing:.24em;text-transform:uppercase;
+    color:var(--brass-dim);margin-bottom:18px;
+  }
+  .title-card h2{
+    font-family:var(--display);font-weight:900;font-size:clamp(34px,7vw,58px);
+    line-height:1.05;margin:0 0 18px;letter-spacing:-.02em;text-wrap:balance;
+  }
+  .title-card p{max-width:52ch;margin:0 auto 10px;color:var(--muted)}
+  .tide-hint{
+    margin:26px auto 30px;max-width:46ch;padding:14px 18px;
+    border-left:2px solid var(--brass);background:var(--deck2);
+    color:var(--foam);font-size:14px;text-align:left;
+  }
+  .tide-hint span{display:block;font-family:var(--mono);font-size:10px;letter-spacing:.18em;
+    text-transform:uppercase;color:var(--brass-dim);margin-bottom:5px}
+  .rules{
+    display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:1px;
+    background:var(--rule-soft);border:1px solid var(--rule-soft);margin:0 0 30px;text-align:left;
+  }
+  .rules div{background:var(--deck);padding:12px 14px}
+  .rules dt{font-family:var(--mono);font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--dim)}
+  .rules dd{margin:3px 0 0;font-size:13px;color:var(--foam)}
+
+  /* ---------- buttons ---------- */
+  button{font-family:inherit;color:inherit;cursor:pointer;border:none;background:none}
+  button:focus-visible{outline:2px solid var(--brass);outline-offset:2px}
+  .big-btn{
+    font-family:var(--display);font-weight:700;font-size:16px;
+    background:var(--brass);color:#12232A;padding:14px 40px;border:none;
+    letter-spacing:.02em;transition:filter .15s ease;
+  }
+  .big-btn:hover{filter:brightness(1.12)}
+
+  /* ---------- console layout ---------- */
+  .console{display:grid;grid-template-columns:minmax(0,1fr) 296px;gap:16px;align-items:start}
+  @media(max-width:820px){.console{grid-template-columns:1fr}}
+
+  .panel{border:1px solid var(--rule);background:var(--deck)}
+  .panel-head{
+    display:flex;align-items:center;justify-content:space-between;gap:10px;
+    padding:9px 14px;border-bottom:1px solid var(--rule-soft);
+    font-family:var(--mono);font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--dim);
+  }
+
+  /* ambient — 지역에 따라 페이지 전체 색조가 바뀐다 */
+  .ambient{position:fixed;inset:0;z-index:-1;pointer-events:none;transition:background 700ms ease}
+
+  /* scene */
+  .scene-art{position:relative;height:164px;overflow:hidden;border-bottom:1px solid var(--rule-soft)}
+  .scene-art svg{position:absolute;inset:0;width:100%;height:100%;display:block}
+  .scene-art::after{
+    content:"";position:absolute;inset:0;pointer-events:none;
+    background:linear-gradient(180deg,rgba(7,16,22,0) 58%,rgba(7,16,22,.3) 84%,rgba(13,28,35,.82) 100%);
+  }
+  .scene-cap{position:absolute;left:20px;right:20px;bottom:11px;z-index:2;
+    display:flex;align-items:center;gap:12px}
+  .scene-cap h3{font-family:var(--display);font-weight:900;font-size:30px;margin:0;letter-spacing:-.01em;
+    text-shadow:0 2px 12px rgba(7,16,22,.9)}
+  @media(max-width:820px){.scene-art{height:126px}.scene-cap h3{font-size:25px}}
+  .scene{padding:14px 20px 18px}
+  .chip{
+    font-family:var(--mono);font-size:10px;letter-spacing:.1em;text-transform:uppercase;
+    padding:3px 8px;border:1px solid currentColor;
+  }
+  .scene-cap .chip{background:rgba(7,16,22,.62);backdrop-filter:blur(2px)}
+  .chip.safe{color:var(--safe)}
+  .chip.flood{color:var(--danger)}
+  .water-line{color:var(--muted);font-size:14px;margin:0 0 16px}
+  .water-line.crit{color:var(--danger)}
+
+  /* log */
+  .log{
+    max-height:230px;overflow-y:auto;padding:4px 20px 16px;
+    display:flex;flex-direction:column;gap:9px;
+  }
+  .entry{display:grid;grid-template-columns:56px minmax(0,1fr);gap:12px;font-size:13.5px}
+  .entry time{font-family:var(--mono);font-size:11px;color:var(--dim);padding-top:3px}
+  .entry .txt{color:var(--foam)}
+  .entry.get .txt{color:var(--brass)}
+  .entry.warn .txt{color:var(--danger)}
+  .entry.sys .txt{color:var(--muted)}
+
+  /* verdict card (algorithm output) */
+  .verdict{border:1px solid var(--brass-dim);background:#151F1E;margin:2px 20px 16px}
+  .verdict h4{
+    margin:0;padding:8px 13px;border-bottom:1px solid var(--brass-dim);
+    font-family:var(--mono);font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--brass);
+  }
+  .verdict .body{padding:11px 13px}
+  .verdict .pick{font-family:var(--display);font-weight:700;font-size:16px;color:var(--foam);margin-bottom:6px}
+  .verdict table{width:100%;border-collapse:collapse;font-family:var(--mono);font-size:11.5px;margin-top:8px}
+  .verdict th{text-align:left;color:var(--dim);font-weight:400;padding:3px 0;border-bottom:1px solid var(--rule)}
+  .verdict td{padding:3px 0;color:var(--muted);border-bottom:1px solid var(--rule-soft)}
+  .verdict td:first-child{color:var(--foam)}
+  .verdict td.no{color:var(--dim)}
+  .verdict .ok{color:var(--safe)}
+
+  /* actions */
+  .acts{padding:14px 20px 20px;border-top:1px solid var(--rule-soft)}
+  .acts h5{font-family:var(--mono);font-size:10px;letter-spacing:.18em;text-transform:uppercase;
+    color:var(--dim);margin:0 0 9px;font-weight:400}
+  .act-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(148px,1fr));gap:7px}
+  .act{
+    display:flex;flex-direction:column;gap:2px;align-items:flex-start;
+    border:1px solid var(--rule);background:var(--deck2);padding:9px 11px;text-align:left;
+    transition:border-color .15s ease,background .15s ease;
+  }
+  .act:hover:not(:disabled){border-color:var(--brass);background:#193038}
+  .act .n{font-family:var(--display);font-weight:700;font-size:14px}
+  .act .c{font-family:var(--mono);font-size:10.5px;color:var(--muted)}
+  .act:disabled{opacity:.42;cursor:not-allowed}
+  .act:disabled .c{color:var(--danger)}
+  .act.escape{border-color:var(--brass-dim)}
+  .act.escape .n{color:var(--brass)}
+  .act.ready{background:#1E2E22;border-color:var(--safe)}
+  .act.ready .n{color:var(--safe)}
+  .acts + .acts{border-top:1px solid var(--rule-soft)}
+
+  /* instruments */
+  .clock{padding:16px 16px 18px;text-align:center;border-bottom:1px solid var(--rule-soft)}
+  .clock .lbl{font-family:var(--mono);font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--dim)}
+  .clock .val{
+    font-family:var(--mono);font-weight:600;font-size:46px;line-height:1.05;
+    font-variant-numeric:tabular-nums;letter-spacing:-.02em;margin-top:2px;
+  }
+  .clock .val.low{color:var(--danger)}
+  .meter{height:3px;background:var(--rule-soft);margin-top:10px}
+  .meter i{display:block;height:100%;background:var(--brass);transition:width .3s ease}
+  .meter.low i{background:var(--danger)}
+
+  .gauge{padding:13px 16px;border-bottom:1px solid var(--rule-soft)}
+  .gauge .row{display:flex;justify-content:space-between;align-items:baseline;
+    font-family:var(--mono);font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--dim)}
+  .gauge .row b{font-size:13px;letter-spacing:0;color:var(--safe);font-weight:600;font-variant-numeric:tabular-nums}
+  .gauge.on .row b{color:var(--danger)}
+  .gauge .bar{height:6px;background:var(--rule-soft);margin-top:7px}
+  .gauge .bar i{display:block;height:100%;background:var(--safe);transition:width .3s ease}
+  .gauge.on .bar i{background:var(--danger)}
+  .gauge .note{font-size:11.5px;color:var(--dim);margin-top:6px;line-height:1.4}
+  .gauge.on .note{color:var(--danger)}
+
+  /* tide table */
+  .tide{padding:12px 16px 14px;border-bottom:1px solid var(--rule-soft)}
+  .tide table{width:100%;border-collapse:collapse}
+  .tide th{
+    font-family:var(--mono);font-size:9.5px;letter-spacing:.12em;text-transform:uppercase;
+    color:var(--dim);font-weight:400;text-align:left;padding-bottom:5px;
+  }
+  .tide th:last-child,.tide td:last-child{text-align:right}
+  .tide td{padding:5px 0 4px;font-size:13px;border-top:1px solid var(--rule-soft)}
+  .tide .m{font-weight:500}
+  .tide tr.here .m{color:var(--brass)}
+  .tide tr.here .m::before{content:"▸ ";color:var(--brass)}
+  .tide .t{font-family:var(--mono);font-size:11.5px;color:var(--muted);font-variant-numeric:tabular-nums}
+  .tide tr.wet .t{color:var(--danger)}
+  .tide tr.wet .m{color:var(--danger)}
+  .tide .fill{height:2px;background:var(--rule-soft);margin-top:3px}
+  .tide .fill i{display:block;height:100%;background:var(--danger);transition:width .4s linear}
+
+  /* inventory */
+  .inv{padding:12px 16px 16px}
+  .inv ul{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:4px}
+  .inv li{display:flex;justify-content:space-between;gap:8px;font-size:13px;
+    padding-bottom:4px;border-bottom:1px solid var(--rule-soft)}
+  .inv li span{font-family:var(--mono);font-size:12px;color:var(--brass);font-variant-numeric:tabular-nums}
+  .inv .empty{color:var(--dim);font-size:12.5px;margin:0}
+
+  .hint-btn{
+    width:100%;border:1px solid var(--brass-dim);background:transparent;color:var(--brass);
+    padding:10px;font-family:var(--display);font-weight:700;font-size:13.5px;
+    transition:background .15s ease;
+  }
+  .hint-btn:hover:not(:disabled){background:#1E2A26}
+  .hint-btn:disabled{opacity:.4;cursor:not-allowed;color:var(--dim);border-color:var(--rule)}
+
+  /* end screen */
+  .end{border:1px solid var(--rule);background:var(--deck);padding:34px 30px;text-align:center}
+  .end .rank{
+    font-family:var(--display);font-weight:900;font-size:78px;line-height:1;
+    letter-spacing:-.03em;margin:0 0 4px;
+  }
+  .end h2{font-family:var(--display);font-weight:900;font-size:26px;margin:0 0 6px}
+  .end .flavor{color:var(--muted);max-width:48ch;margin:0 auto 24px}
+  .calc{
+    display:inline-block;text-align:left;border:1px solid var(--rule);background:var(--deck2);
+    padding:14px 18px;margin-bottom:24px;font-family:var(--mono);font-size:12px;color:var(--muted);
+  }
+  .calc div{padding:2px 0;font-variant-numeric:tabular-nums}
+  .calc .total{border-top:1px solid var(--rule);margin-top:7px;padding-top:7px;color:var(--brass);font-size:15px;font-weight:600}
+  .new-best{color:var(--safe);font-family:var(--mono);font-size:12px;margin:-14px 0 20px}
+  .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+  @media(prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+</head>
+<body>
+<div class="ambient" id="ambient"></div>
+<div class="wrap">
+  <div class="masthead">
+    <div class="brand">
+      <h1>만조까지 10분</h1>
+      <div class="sub">Tide Escape Protocol</div>
+    </div>
+    <div class="best" id="best"></div>
+  </div>
+  <div id="app"></div>
+</div>
+
+<script>
+(function(){
+  "use strict";
+
+  /* ============ 상수 (명확성: 모든 비용은 고정 수치) ============ */
+  var LIMIT = 600;              // 총 제한 시간(초)
+  var SEARCH_BASE = 20;         // 조사 1회차 비용
+  var SEARCH_STEP = 6;          // 같은 지역 재조사마다 가산
+  // 조사 가능 횟수 = 그 지역의 아이템 수 + 빈칸 1
+  var GAUGE_MAX = 30;           // 생존 게이지(초)
+  var HINTS = 3;
+
+  var MAPS = ["해변","숲","동굴","산"];
+  var DIST = {
+    "해변":{"숲":30,"동굴":30,"산":45},
+    "숲":{"해변":30,"동굴":45,"산":30},
+    "동굴":{"해변":30,"숲":45,"산":45},
+    "산":{"해변":45,"숲":30,"동굴":45}
+  };
+  var FLOOD = {"해변":[60,240],"숲":[240,420],"동굴":[360,480],"산":[480,600]};
+  // 핵심 재료는 한 지역에만 난다 — 못은 동굴, 돛천과 공구는 산, 송진은 숲
+  var POOL = {
+    "해변":["나무판","로프","보트파편","거울"],
+    "숲"  :["나무판","로프","송진"],
+    "동굴":["못","배터리","거울"],
+    "산"  :["돛천","공구","무전기"]
+  };
+  function slotsOf(m){ return POOL[m].length + 1; }   // 아이템 + 빈칸 1
+
+  var ROUTES = [
+    {id:"raft", name:"뗏목 완성", tag:"완벽한 탈출", base:10000, cost:60, at:"해변",
+     need:{"나무판":2,"못":1,"돛천":1,"공구":1},
+     done:"직접 엮은 뗏목이 파도를 탄다. 섬이 등 뒤로 멀어진다."},
+    {id:"repair", name:"난파선 수리", tag:"비교적 탈출", base:8000, cost:40, at:"해변",
+     need:{"보트파편":1,"송진":1,"로프":1,"공구":1},
+     done:"기운 배가 물을 먹으면서도 앞으로 나아간다. 겨우 바다로 나섰다."},
+    {id:"radio", name:"무전 구조 요청", tag:"겨우 탈출", base:5000, cost:20, at:"산",
+     need:{"무전기":1,"배터리":1},
+     done:"잡음 사이로 응답이 돌아온다. 헬기 소리가 수평선에서 커진다."},
+    {id:"mirror", name:"반사경 신호", tag:"겨우 탈출", base:5000, cost:20, at:null,
+     need:{"거울":2},
+     done:"반사광이 지나던 어선에 닿았다. 물이 목에 닿기 직전 끌어올려졌다."}
+  ];
+  var RANKS = [[7000,"S"],[5500,"A"],[4000,"B"],[2500,"C"],[1,"D"]];
+
+  /* ============ 상태 ============ */
+  var S = null;
+  var app = document.getElementById("app");
+  var bestEl = document.getElementById("best");
+
+  function readBest(){ try{ return parseInt(localStorage.getItem("tide_best")||"0",10)||0; }catch(e){ return 0; } }
+  function writeBest(v){ try{ localStorage.setItem("tide_best",String(v)); return true; }catch(e){ return false; } }
+  function paintBest(){
+    var b = readBest();
+    bestEl.innerHTML = b>0 ? '최고 기록 <b>'+b.toLocaleString()+'</b>점' : '';
+  }
+
+  function ri(a,b){ return a + Math.floor(Math.random()*(b-a+1)); }
+  function shuffle(a){ for(var i=a.length-1;i>0;i--){ var j=Math.floor(Math.random()*(i+1)); var t=a[i];a[i]=a[j];a[j]=t; } return a; }
+  function clock(sec){
+    if(sec<0) sec=0;
+    var m=Math.floor(sec/60), s=sec%60;
+    return m+":"+(s<10?"0":"")+s;
+  }
+  function esc(s){ return String(s).replace(/[&<>]/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;"}[c];}); }
+
+  function newGame(){
+    var slots={}, idx={}, flood={}, found={};
+    MAPS.forEach(function(m){
+      slots[m] = shuffle(POOL[m].slice().concat([null]));  // 4 아이템 + 1 빈칸
+      idx[m] = 0;
+      found[m] = [];
+      flood[m] = ri(FLOOD[m][0], FLOOD[m][1]);
+    });
+    S = { t:0, pos:"해변", inv:{}, slots:slots, idx:idx, found:found, flood:flood,
+          gauge:GAUGE_MAX, hints:HINTS, revealed:false, log:[], verdict:null, over:null };
+    S.log.push({t:0,k:"sys",txt:"파도에 떠밀려 해변에 닿았다. 물은 이미 차오르기 시작했다."});
+  }
+
+  /* ============ 조회 함수 ============ */
+  function left(){ return LIMIT - S.t; }
+  function wet(m){ return S.t >= S.flood[m]; }
+  function depth(m){ // 침수 후 경과에 따른 수위 0~100
+    if(!wet(m)) return 0;
+    return Math.min(100, Math.round((S.t - S.flood[m]) / 120 * 100));
+  }
+  function have(item){ return S.inv[item]||0; }
+  // 같은 지역을 반복해 뒤질수록 비용 상승: 20 / 28 / 36 / 44 / 52
+  function searchCost(m){ return SEARCH_BASE + SEARCH_STEP * S.idx[m]; }
+  function searchRun(m, n){ // 지역 m에서 n회 연속 조사 총비용
+    var sum = 0;
+    for(var i=0;i<n;i++) sum += SEARCH_BASE + SEARCH_STEP * (S.idx[m] + i);
+    return sum;
+  }
+  function missing(route){
+    var out = {}, any=false;
+    for(var k in route.need){
+      var d = route.need[k] - have(k);
+      if(d>0){ out[k]=d; any=true; }
+    }
+    return any ? out : null;
+  }
+  function missCount(route){
+    var n=0, m=missing(route);
+    if(!m) return 0;
+    for(var k in m) n+=m[k];
+    return n;
+  }
+  function drainFor(sec){ // 이 행동 동안 침수 상태로 보내는 초
+    var start = Math.max(S.t, S.flood[S.pos]);
+    return Math.max(0, (S.t + sec) - start);
+  }
+
+  /* ============ 행동 ============ */
+  // mode: "search" 만 게이지를 소모한다. 이동과 탈출 실행은 물을 벗어나는 행동이라 보호된다.
+  function advance(sec, mode, dest){
+    var drain = (mode === "search") ? drainFor(sec) : 0;
+    S.t += sec;
+    if(mode === "move"){
+      S.pos = dest;
+      if(!wet(dest)) S.gauge = GAUGE_MAX;
+    }else{
+      S.gauge -= drain;
+      if(!wet(S.pos)) S.gauge = GAUGE_MAX;
+    }
+    if(S.gauge<0) S.gauge=0;
+  }
+
+  function doSearch(){
+    if(S.idx[S.pos] >= slotsOf(S.pos)) return;
+    var cost = searchCost(S.pos);
+    if(left() < cost) return;
+    if(wet(S.pos) && S.gauge <= drainFor(cost)) return;
+    var found = S.slots[S.pos][S.idx[S.pos]];
+    var deep = S.idx[S.pos] >= 2;
+    S.idx[S.pos]++;
+    advance(cost,"search");
+    if(found === null){
+      S.log.push({t:S.t,k:"",txt: deep ? "바위를 들추고 모래를 팠지만 아무것도 없다." : "뒤졌지만 쓸 만한 건 없다."});
+    }else{
+      S.inv[found] = have(found)+1;
+      S.found[S.pos].push(found);
+      S.log.push({t:S.t,k:"get",txt: (deep ? "깊이 파고들어 "+found+"을(를) 꺼냈다." : found+"을(를) 확보했다.")});
+    }
+    if(S.idx[S.pos] < slotsOf(S.pos) && deep){
+      S.log.push({t:S.t,k:"sys",txt:"쉬운 곳은 다 뒤졌다. 다음 수색은 "+searchCost(S.pos)+"초 걸린다."});
+    }
+    after();
+  }
+
+  function doMove(dest){
+    var d = DIST[S.pos][dest];
+    if(left() < d) return;
+    advance(d,"move",dest);
+    if(dest==="산" && !S.revealed){
+      S.revealed = true;
+      S.log.push({t:S.t,k:"sys",txt:"산등성이에 올라 섬 전체가 보인다. 어느 지역이 언제 잠기는지 읽어냈다."});
+    }
+    S.log.push({t:S.t,k:wet(dest)?"warn":"",txt:dest+"에 도착했다. "+waterLine(dest)});
+    after();
+  }
+
+  function doEscape(route){
+    if(missing(route)) return;
+    if(route.at && route.at !== S.pos) return;
+    if(left() < route.cost) return;
+    advance(route.cost,"escape");
+    var rem = left();
+    var mult = 0.5 + 0.5 * (rem / LIMIT);
+    var score = Math.round(route.base * mult);
+    S.over = {kind:"escape", route:route, rem:rem, mult:mult, score:score};
+    render();
+  }
+
+  /* ============ 종료 판정 (유한성) ============ */
+  function after(){
+    if(left() <= 0){
+      S.over = {kind:"drown", score:0};
+      return render();
+    }
+    // 가능한 행동이 하나라도 있는가
+    var canSearch = S.idx[S.pos] < slotsOf(S.pos) && left() >= searchCost(S.pos) &&
+                    !(wet(S.pos) && S.gauge <= drainFor(searchCost(S.pos)));
+    var canMove = MAPS.some(function(m){ return m!==S.pos && left() >= DIST[S.pos][m]; });
+    var canEsc = ROUTES.some(function(r){
+      return !missing(r) && (!r.at || r.at === S.pos) && left() >= r.cost;
+    });
+    if(!canSearch && !canMove && !canEsc){
+      S.over = {kind: wet(S.pos) ? "shark" : "stranded", score:0};
+    }
+    render();
+  }
+
+  /* ============ 추천 알고리즘 · 입력 5 → 출력 1 ============ */
+  // 최근접 이웃으로 순회하고, 마지막에 실행 장소까지 돌아가는 비용을 더한다
+  function tour(from, set, finish){
+    var cur = from, rest = set.slice(), total = 0;
+    while(rest.length){
+      var bi=0, bd=Infinity;
+      for(var i=0;i<rest.length;i++){
+        var d = (rest[i]===cur) ? 0 : DIST[cur][rest[i]];
+        if(d<bd){ bd=d; bi=i; }
+      }
+      total += bd; cur = rest[bi]; rest.splice(bi,1);
+    }
+    if(finish && finish !== cur) total += DIST[cur][finish];
+    return total;
+  }
+
+  function evaluate(route){
+    var miss = missing(route);
+    var need = 0, maps = [], count = {};
+    if(miss){
+      for(var item in miss){
+        var supply = MAPS.filter(function(m){
+          return POOL[m].indexOf(item)>=0 &&
+                 (S.idx[m] + (count[m]||0)) < slotsOf(m) &&
+                 S.found[m].indexOf(item) < 0;
+        }).sort(function(a,b){
+          return (a===S.pos?0:DIST[S.pos][a]) - (b===S.pos?0:DIST[S.pos][b]);
+        });
+        if(supply.length < miss[item]){
+          return {route:route, ok:false, why:"공급처 부족", eta:null, sc:0, miss:miss};
+        }
+        for(var i=0;i<miss[item];i++){
+          var mm = supply[i];
+          if(maps.indexOf(mm)<0) maps.push(mm);
+          count[mm] = (count[mm]||0) + 1;
+        }
+        need += miss[item];
+      }
+    }
+    var travel = tour(S.pos, maps, route.at);
+    var digging = 0;
+    for(var mk in count) digging += searchRun(mk, count[mk]);
+    var eta = travel + digging + route.cost;
+    var rem = left() - eta;
+    if(rem < 0) return {route:route, ok:false, why:"시간 부족", eta:eta, sc:0, miss:miss, need:need, travel:travel};
+    var sc = Math.round(route.base * (0.5 + 0.5*(rem/LIMIT)));
+    return {route:route, ok:true, eta:eta, sc:sc, miss:miss, need:need, travel:travel};
+  }
+
+  function doHint(){
+    if(S.hints<=0) return;
+    S.hints--;
+    var rows = ROUTES.map(evaluate);
+    var ok = rows.filter(function(r){return r.ok;}).sort(function(a,b){return b.sc-a.sc;});
+    S.verdict = {rows:rows, best: ok.length?ok[0]:null};
+    render();
+  }
+
+  /* ============ 지역 배경 ============ */
+  var AMB = {
+    "해변":"radial-gradient(ellipse 130% 78% at 50% -6%, #12414E 0%, rgba(7,16,22,0) 66%)",
+    "숲"  :"radial-gradient(ellipse 130% 78% at 50% -6%, #13351F 0%, rgba(7,16,22,0) 66%)",
+    "동굴":"radial-gradient(ellipse 130% 78% at 50% -6%, #251E38 0%, rgba(7,16,22,0) 66%)",
+    "산"  :"radial-gradient(ellipse 130% 78% at 50% -6%, #1A3A57 0%, rgba(7,16,22,0) 66%)"
+  };
+  var AMB_NEUTRAL = "radial-gradient(ellipse 130% 80% at 50% -10%, #0F2730 0%, rgba(15,39,48,0) 60%)";
+  function setAmbient(g){
+    var el = document.getElementById("ambient");
+    if(el) el.style.background = g;
+  }
+
+  // 그림 속 수위(%) — 침수가 진행될수록 화면의 물이 실제로 차오른다
+  function waterPct(m){
+    var base = {"해변":11,"숲":0,"동굴":6,"산":0}[m];
+    if(!wet(m)) return base;
+    return Math.min(80, base + depth(m) * 0.62);
+  }
+
+  function sceneArt(m){
+    var pct = waterPct(m), y = 100 - pct;   // viewBox 400×100
+    var wet_ = wet(m);
+    var body = "";
+
+    if(m === "해변"){
+      body =
+        '<defs><linearGradient id="g_b" x1="0" y1="0" x2="0" y2="1">'+
+        '<stop offset="0" stop-color="#20586A"/><stop offset="1" stop-color="#0E3140"/></linearGradient></defs>'+
+        '<rect width="400" height="100" fill="url(#g_b)"/>'+
+        '<circle cx="322" cy="20" r="10" fill="#E0A455" opacity="0.45"/>'+
+        '<rect x="0" y="46" width="400" height="54" fill="#0A2530"/>'+
+        '<rect x="0" y="45.4" width="400" height="1" fill="#357080"/>'+
+        '<rect x="0" y="56" width="400" height="0.8" fill="#1B4C59" opacity="0.8"/>'+
+        '<rect x="0" y="64" width="400" height="0.8" fill="#174250" opacity="0.7"/>'+
+        '<path d="M0 70 Q66 60 132 68 T268 66 T400 72 V100 H0 Z" fill="#2A5A66"/>'+
+        '<path d="M0 76 Q70 67 140 74 T280 72 T400 78 V100 H0 Z" fill="#1D4450"/>'+
+        '<ellipse cx="62" cy="84" rx="18" ry="4" fill="#2E626F"/>'+
+        '<ellipse cx="340" cy="92" rx="26" ry="5" fill="#2E626F"/>'+
+        '<path d="M126 69 l5 -12 l5 12 z" fill="#1A414D"/>'+
+        '<path d="M182 45 h34 v1 h-34 z" fill="#2A5F6D" opacity="0.6"/>';
+    }else if(m === "숲"){
+      body =
+        '<defs><linearGradient id="g_f" x1="0" y1="0" x2="0" y2="1">'+
+        '<stop offset="0" stop-color="#1B4429"/><stop offset="1" stop-color="#071A10"/></linearGradient></defs>'+
+        '<rect width="400" height="100" fill="url(#g_f)"/>'+
+        '<ellipse cx="200" cy="30" rx="190" ry="26" fill="#256135" opacity="0.35"/>'+
+        '<g fill="#0C2517">'+
+          '<rect x="36" y="40" width="7" height="60"/>'+
+          '<path d="M39.5 6 L57 34 H22 Z"/><path d="M39.5 22 L61 52 H18 Z"/>'+
+          '<rect x="326" y="34" width="8" height="66"/>'+
+          '<path d="M330 2 L350 32 H310 Z"/><path d="M330 20 L355 54 H305 Z"/>'+
+        '</g>'+
+        '<g fill="#113020">'+
+          '<rect x="148" y="52" width="5" height="48"/>'+
+          '<path d="M150.5 24 L165 50 H136 Z"/><path d="M150.5 38 L168 62 H133 Z"/>'+
+          '<rect x="240" y="58" width="4" height="42"/>'+
+          '<path d="M242 34 L254 58 H230 Z"/><path d="M242 46 L256 68 H228 Z"/>'+
+        '</g>'+
+        '<path d="M0 84 Q80 78 160 83 T320 81 T400 86 V100 H0 Z" fill="#0A2013"/>'+
+        '<ellipse cx="200" cy="72" rx="200" ry="12" fill="#3A7A4E" opacity="0.16"/>';
+    }else if(m === "동굴"){
+      body =
+        '<defs><linearGradient id="g_c" x1="0" y1="0" x2="0" y2="1">'+
+        '<stop offset="0" stop-color="#2B2340"/><stop offset="1" stop-color="#0A0913"/></linearGradient></defs>'+
+        '<rect width="400" height="100" fill="url(#g_c)"/>'+
+        '<path d="M290 0 L346 0 L214 100 L158 100 Z" fill="#E0A455" opacity="0.08"/>'+
+        '<path d="M0 0 H400 V14 Q356 20 330 34 Q312 18 292 26 Q262 8 232 24 '+
+          'Q206 6 176 22 Q146 4 116 20 Q80 6 44 18 Q20 24 0 18 Z" fill="#181228"/>'+
+        '<g fill="#1E1734">'+
+          '<path d="M92 12 h9 l-4.5 26 z"/><path d="M186 16 h11 l-5.5 34 z"/>'+
+          '<path d="M262 10 h8 l-4 22 z"/><path d="M338 20 h10 l-5 30 z"/>'+
+        '</g>'+
+        '<path d="M0 86 Q72 76 144 85 T286 82 T400 89 V100 H0 Z" fill="#151126"/>'+
+        '<g fill="#1D1633">'+
+          '<path d="M110 100 l-5 -20 l-5 20 z"/><path d="M298 100 l-6 -16 l-6 16 z"/>'+
+        '</g>';
+    }else{ // 산
+      body =
+        '<defs><linearGradient id="g_m" x1="0" y1="0" x2="0" y2="1">'+
+        '<stop offset="0" stop-color="#265A7C"/><stop offset="1" stop-color="#0C2536"/></linearGradient></defs>'+
+        '<rect width="400" height="100" fill="url(#g_m)"/>'+
+        '<g fill="#DDEAE5" opacity="0.55">'+
+          '<circle cx="58" cy="14" r="1"/><circle cx="142" cy="8" r="0.8"/><circle cx="228" cy="17" r="1.1"/>'+
+          '<circle cx="306" cy="10" r="0.8"/><circle cx="370" cy="22" r="0.9"/><circle cx="96" cy="26" r="0.7"/>'+
+        '</g>'+
+        '<path d="M0 66 L74 30 L128 55 L186 22 L262 62 L318 42 L400 72 V100 H0 Z" fill="#153B51"/>'+
+        '<path d="M186 22 l10 12 h-20 z" fill="#DDEAE5" opacity="0.3"/>'+
+        '<path d="M0 80 L58 58 L124 77 L196 52 L268 79 L340 62 L400 83 V100 H0 Z" fill="#102D3E"/>'+
+        '<path d="M196 52 l8 10 h-16 z" fill="#DDEAE5" opacity="0.18"/>'+
+        '<path d="M0 92 L96 79 L200 91 L300 78 L400 91 V100 H0 Z" fill="#0A2130"/>';
+    }
+
+    var water = pct > 0
+      ? '<rect x="0" y="'+y.toFixed(1)+'" width="400" height="'+pct.toFixed(1)+'" fill="'+
+          (wet_ ? "#1B4B58" : "#123742")+'" opacity="'+(wet_ ? "0.74" : "0.62")+'"/>'+
+        '<rect x="0" y="'+y.toFixed(1)+'" width="400" height="1" fill="'+
+          (wet_ ? "#E2513F" : "#3E7C86")+'" opacity="'+(wet_ ? "0.8" : "0.7")+'"/>'
+      : "";
+
+    // 침수된 지역에는 지느러미가 돈다
+    var fin = wet_
+      ? '<path d="M'+(m==="해변"?168:104)+' '+(y+1).toFixed(1)+' l7 -9 l3 9 z" fill="#07131A" opacity="0.9"/>'
+      : "";
+
+    return '<svg viewBox="0 0 400 100" preserveAspectRatio="xMidYMid slice" aria-hidden="true">'+
+           body + water + fin + '</svg>';
+  }
+
+  /* ============ 묘사 ============ */
+  function waterLine(m){
+    var d = S.flood[m] - S.t;
+    if(d > 150) return "마른 땅이다. 아직 물기는 없다.";
+    if(d > 60) return "물가가 눈에 띄게 가까워졌다.";
+    if(d > 0) return "발목까지 물이 스민다. 곧 잠긴다.";
+    var w = S.t - S.flood[m];
+    if(w < 40) return "무릎까지 물이 찼다. 검은 지느러미가 원을 그린다.";
+    if(w < 100) return "허리까지 잠겼다. 상어가 바로 곁을 스친다.";
+    return "가슴까지 물이다. 발이 바닥에서 뜬다.";
+  }
+  function startHint(){
+    var f = S.flood["해변"];
+    if(f < 120) return "동쪽 하늘이 시커멓다. 해변은 오래 버티지 못한다.";
+    if(f < 180) return "파도가 조금씩 높아지고 있다. 해변부터 잠길 것이다.";
+    return "아직은 바다가 잔잔하다. 해변을 뒤질 여유는 있어 보인다.";
+  }
+
+  /* ============ 렌더 ============ */
+  function render(){
+    paintBest();
+    if(!S){ return renderTitle(); }
+    if(S.over){ return renderEnd(); }
+    renderGame();
+  }
+
+  function renderTitle(){
+    setAmbient(AMB_NEUTRAL);
+    app.innerHTML =
+      '<div class="title-card">'+
+        '<div class="kicker">무인도 · 만조 · 10분</div>'+
+        '<h2>물이 차오른다.<br>배가 없으면 상어가 먼저 온다.</h2>'+
+        '<p>난파해 떠밀려온 무인도. 만조까지 남은 시간은 600초다. 네 곳을 뒤져 재료를 모으고, 바다가 섬을 삼키기 전에 빠져나가야 한다.</p>'+
+        '<p>어떻게 나가느냐가 점수를 가른다. 뗏목을 엮으면 최고점, 반사경을 흔들면 목숨만 건진다. 한 곳을 끝까지 파는 사람은 대개 물에 잠긴다.</p>'+
+        '<div class="rules">'+
+          '<div><dt>제한 시간</dt><dd>600초 (행동할 때만 흐름)</dd></div>'+
+          '<div><dt>조사</dt><dd>20초부터 · 같은 곳 재수색마다 +6초</dd></div>'+
+          '<div><dt>이동</dt><dd>30~45초 · 이동 중엔 안전</dd></div>'+
+          '<div><dt>생존 게이지</dt><dd>침수 지역에서 30초</dd></div>'+
+          '<div><dt>뗏목</dt><dd>네 지역 재료가 전부 필요 · 해변에서 조립</dd></div>'+
+          '<div><dt>난파선</dt><dd>세 지역 · 해변에서 수리</dd></div>'+
+          '<div><dt>무전</dt><dd>두 지역 · 산에서 송신</dd></div>'+
+        '</div>'+
+        '<button class="big-btn" id="go">표류 시작</button>'+
+      '</div>';
+    document.getElementById("go").onclick = function(){
+      newGame();
+      S.log.push({t:0,k:"sys",txt:startHint()});
+      render();
+    };
+  }
+
+  function renderGame(){
+    setAmbient(AMB[S.pos] || AMB_NEUTRAL);
+    var flooded = wet(S.pos);
+    var lowTime = left() <= 120;
+
+    /* --- 로그 --- */
+    var logHtml = S.log.slice(-14).map(function(e){
+      return '<div class="entry '+e.k+'"><time>'+clock(e.t)+'</time><div class="txt">'+esc(e.txt)+'</div></div>';
+    }).join("");
+
+    /* --- 판정 카드 --- */
+    var vHtml = "";
+    if(S.verdict){
+      var v = S.verdict;
+      var rowsHtml = v.rows.map(function(r){
+        var etaTxt = r.eta==null ? "—" : r.eta+"초";
+        if(!r.ok){
+          return '<tr><td class="no">'+r.route.name+'</td><td class="no">부족 '+
+            (r.need!=null?r.need:missCount(r.route))+'</td><td class="no">'+etaTxt+
+            '</td><td class="no">'+r.why+'</td></tr>';
+        }
+        return '<tr><td>'+r.route.name+'</td><td>부족 '+r.need+'</td><td>'+etaTxt+
+          '</td><td class="ok">'+r.sc.toLocaleString()+'점</td></tr>';
+      }).join("");
+      var pick = v.best
+        ? '<div class="pick">권장 · '+v.best.route.name+'</div>'+
+          '<div style="font-size:12.5px;color:var(--muted)">부족 아이템 '+v.best.need+'개 · 예상 소요 '+
+          v.best.eta+'초 ≤ 잔여 '+left()+'초 · 예상 '+v.best.sc.toLocaleString()+'점</div>'
+        : '<div class="pick" style="color:var(--danger)">실행 가능한 경로 없음</div>'+
+          '<div style="font-size:12.5px;color:var(--muted)">즉시 산으로 대피할 것.</div>';
+      vHtml =
+        '<div class="verdict"><h4>탈출 경로 판정 · 입력 5 → 출력 1</h4><div class="body">'+
+        pick+
+        '<table><thead><tr><th>경로</th><th>부족</th><th>예상 소요</th><th>판정</th></tr></thead><tbody>'+
+        rowsHtml+'</tbody></table></div></div>';
+    }
+
+    /* --- 행동 --- */
+    var acts = [];
+    var searchLeft = slotsOf(S.pos) - S.idx[S.pos];
+    var sCost = searchCost(S.pos);
+    var sDis="", sNote=sCost+"초 · 남은 조사 "+searchLeft+"회";
+    if(searchLeft<=0){ sDis="disabled"; sNote="이 지역은 모두 조사했다"; }
+    else if(left()<sCost){ sDis="disabled"; sNote="시간 부족: "+sCost+"초 필요, "+left()+"초 남음"; }
+    else if(flooded && S.gauge <= drainFor(sCost)){ sDis="disabled"; sNote="생존 게이지 부족: "+sCost+"초 필요, "+S.gauge+"초"; }
+    var sName = S.idx[S.pos]===0 ? "주변 조사" : "더 깊이 수색";
+    acts.push('<button class="act" data-a="search" '+sDis+'><span class="n">'+sName+'</span><span class="c">'+sNote+'</span></button>');
+
+    MAPS.forEach(function(m){
+      if(m===S.pos) return;
+      var d = DIST[S.pos][m];
+      var dis="", note=d+"초"+(wet(m)?" · 이미 침수":"");
+      if(left()<d){ dis="disabled"; note="시간 부족: "+d+"초 필요, "+left()+"초 남음"; }
+      acts.push('<button class="act" data-a="move" data-m="'+m+'" '+dis+'><span class="n">'+m+'(으)로</span><span class="c">'+note+'</span></button>');
+    });
+
+    var escs = ROUTES.map(function(r){
+      var miss = missing(r), dis="", cls="act escape", note;
+      var total=0, has=0;
+      for(var k in r.need){ total+=r.need[k]; has+=Math.min(have(k), r.need[k]); }
+      if(miss){
+        dis="disabled";
+        var parts=[]; for(var k2 in miss) parts.push(k2+" "+miss[k2]+"개");
+        note = parts.join(", ")+" 부족"+(r.at ? " · "+r.at+"에서 실행" : "");
+      }else if(r.at && r.at !== S.pos){
+        dis="disabled"; note=r.at+"에서만 가능 · 재료는 다 모았다";
+      }else if(left()<r.cost){
+        dis="disabled"; note="시간 부족: "+r.cost+"초 필요, "+left()+"초 남음";
+      }else{
+        cls="act escape ready"; note="실행 "+r.cost+"초 · 기본 "+r.base.toLocaleString()+"점";
+      }
+      return '<button class="'+cls+'" data-a="esc" data-r="'+r.id+'" '+dis+'>'+
+        '<span class="n">'+r.name+' '+has+'/'+total+'</span><span class="c">'+note+'</span></button>';
+    }).join("");
+
+    /* --- 조수표 --- */
+    var tideRows = MAPS.map(function(m){
+      var w = wet(m);
+      var known = S.revealed || w;
+      var cls = (m===S.pos?"here ":"") + (w?"wet":"");
+      var time = known ? clock(S.flood[m]) : "???";
+      var label = w ? "침수" : (known ? "예정" : "미상");
+      var bar = w ? '<div class="fill"><i style="width:'+depth(m)+'%"></i></div>' : '';
+      return '<tr class="'+cls+'"><td class="m">'+m+bar+'</td>'+
+             '<td class="t">'+time+'</td><td class="t">'+label+'</td></tr>';
+    }).join("");
+
+    /* --- 인벤토리 --- */
+    var keys = Object.keys(S.inv).filter(function(k){return S.inv[k]>0;});
+    var invHtml = keys.length
+      ? '<ul>'+keys.map(function(k){return '<li>'+k+'<span>'+S.inv[k]+'</span></li>';}).join("")+'</ul>'
+      : '<p class="empty">아직 아무것도 없다.</p>';
+
+    var gaugePct = Math.round(S.gauge/GAUGE_MAX*100);
+    var gaugeNote = flooded
+      ? "침수 지역이다. 행동할 때마다 그만큼 깎인다."
+      : "안전한 지역. 게이지는 가득 차 있다.";
+
+    app.innerHTML =
+    '<div class="console">'+
+      '<div>'+
+        '<div class="panel">'+
+          '<div class="panel-head"><span>표류 일지</span><span>'+(S.idx[S.pos])+'/'+slotsOf(S.pos)+' 조사</span></div>'+
+          '<div class="scene-art">'+sceneArt(S.pos)+
+            '<div class="scene-cap"><h3>'+S.pos+'</h3>'+
+            '<span class="chip '+(flooded?"flood":"safe")+'">'+(flooded?"침수":"안전")+'</span></div>'+
+          '</div>'+
+          '<div class="scene">'+
+            '<p class="water-line'+(flooded?" crit":"")+'" style="margin:0">'+waterLine(S.pos)+'</p>'+
+          '</div>'+
+          '<div class="log" id="log">'+logHtml+'</div>'+
+          vHtml+
+          '<div class="acts"><h5>행동</h5><div class="act-grid">'+acts.join("")+'</div></div>'+
+          '<div class="acts"><h5>탈출</h5><div class="act-grid">'+escs+'</div></div>'+
+        '</div>'+
+      '</div>'+
+      '<div class="panel">'+
+        '<div class="clock">'+
+          '<div class="lbl">만조까지</div>'+
+          '<div class="val'+(lowTime?" low":"")+'">'+clock(left())+'</div>'+
+          '<div class="meter'+(lowTime?" low":"")+'"><i style="width:'+(left()/LIMIT*100)+'%"></i></div>'+
+        '</div>'+
+        '<div class="gauge'+(flooded?" on":"")+'">'+
+          '<div class="row"><span>생존 게이지</span><b>'+S.gauge+'초</b></div>'+
+          '<div class="bar"><i style="width:'+gaugePct+'%"></i></div>'+
+          '<p class="note">'+gaugeNote+'</p>'+
+        '</div>'+
+        '<div class="tide">'+
+          '<table><thead><tr><th>지역</th><th>침수</th><th>상태</th></tr></thead><tbody>'+tideRows+'</tbody></table>'+
+        '</div>'+
+        '<div class="inv">'+
+          '<div class="panel-head" style="padding:0 0 8px;border:none">소지품</div>'+
+          invHtml+
+          '<div style="margin-top:14px"><button class="hint-btn" id="hint" '+(S.hints<=0?"disabled":"")+'>'+
+            (S.hints>0 ? "경로 판정 요청 ("+S.hints+"회 남음)" : "판정 요청 소진")+'</button></div>'+
+        '</div>'+
+      '</div>'+
+    '</div>';
+
+    var logBox = document.getElementById("log");
+    if(logBox) logBox.scrollTop = logBox.scrollHeight;
+
+    app.querySelectorAll("[data-a]").forEach(function(b){
+      b.addEventListener("click", function(){
+        var a = b.getAttribute("data-a");
+        if(a==="search") doSearch();
+        else if(a==="move") doMove(b.getAttribute("data-m"));
+        else if(a==="esc"){
+          var r = ROUTES.filter(function(x){return x.id===b.getAttribute("data-r");})[0];
+          if(r) doEscape(r);
+        }
+      });
+    });
+    var h = document.getElementById("hint");
+    if(h) h.onclick = doHint;
+  }
+
+  function renderEnd(){
+    setAmbient(S.over.kind==="escape" ? AMB["산"] : "radial-gradient(ellipse 130% 78% at 50% -6%, #3A1418 0%, rgba(7,16,22,0) 66%)");
+    var o = S.over, rank="F", title, flavor, calcHtml="";
+    if(o.kind==="escape"){
+      for(var i=0;i<RANKS.length;i++){ if(o.score>=RANKS[i][0]){ rank=RANKS[i][1]; break; } }
+      title = o.route.name+" 성공";
+      flavor = o.route.done;
+      calcHtml =
+        '<div class="calc">'+
+          '<div>기본 점수 ('+o.route.tag+') &nbsp; '+o.route.base.toLocaleString()+'</div>'+
+          '<div>잔여 시간 &nbsp; '+o.rem+'초 / 600초</div>'+
+          '<div>시간 계수 &nbsp; 0.5 + 0.5 × ('+o.rem+'÷600) = '+o.mult.toFixed(3)+'</div>'+
+          '<div class="total">최종 '+o.score.toLocaleString()+'점</div>'+
+        '</div>';
+    }else if(o.kind==="drown"){
+      title = "만조";
+      flavor = "물이 마지막 바위를 덮었다. 발 디딜 곳은 남지 않았다.";
+    }else if(o.kind==="shark"){
+      title = "상어";
+      flavor = "침수된 지역에 갇혔다. 지느러미가 원을 좁혀 왔다.";
+    }else{
+      title = "고립";
+      flavor = "움직일 시간도, 뒤질 곳도 남지 않았다. 물이 차오르는 것을 보고만 있었다.";
+    }
+
+    var score = o.score||0;
+    var prev = readBest(), isNew = score>0 && score>prev, saved=true;
+    if(isNew) saved = writeBest(score);
+
+    app.innerHTML =
+      '<div class="end">'+
+        '<p class="rank" style="color:'+(score>0?"var(--brass)":"var(--danger)")+'">'+rank+'</p>'+
+        '<h2>'+title+'</h2>'+
+        '<p class="flavor">'+flavor+'</p>'+
+        calcHtml+
+        (isNew ? '<p class="new-best">'+(saved?"최고 기록 경신":"최고 기록 경신 (이 브라우저에는 저장할 수 없음)")+'</p>' : '')+
+        '<div><button class="big-btn" id="again">다시 표류하기</button></div>'+
+      '</div>';
+    document.getElementById("again").onclick = function(){ S=null; render(); };
+    paintBest();
+  }
+
+  render();
+})();
+</script>
+</body>
+</html>
