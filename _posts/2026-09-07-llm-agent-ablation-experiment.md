@@ -393,5 +393,5 @@ B⁻는 더 자주 접근했지만(CHASE 37%), 접근한 다음에 때리지 않
 - [Unity — `UnityWebRequest`](https://docs.unity3d.com/ScriptReference/Networking.UnityWebRequest.html) — 코루틴 기반 비동기 HTTP 호출
 
 전체 코드·원본 로그·분석 스크립트는
-[Unity-LLM-Combat-Agent](https://github.com/Lezo-Jong/Unity-LLM-Combat-Agent)에 있습니다.
+[LLM-unity-DualArena](https://github.com/Lezo-Jong/LLM-unity-DualArena)에 있습니다.
 `Tools/compare_conditions.py`가 이 글의 모든 수치를 그대로 출력합니다.
