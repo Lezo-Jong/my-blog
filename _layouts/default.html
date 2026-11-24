@@ -23,7 +23,10 @@
   {% if page.mermaid %}
   <script src="https://cdn.jsdelivr.net/npm/mermaid@10.9.1/dist/mermaid.min.js"></script>
   <script>
-    document.querySelectorAll('div.language-mermaid').forEach(function (wrap) {
+    // rouge 사용 시 div.language-mermaid, GitHub Pages 기본 출력 시 pre > code.language-mermaid
+    document.querySelectorAll('div.language-mermaid, pre > code.language-mermaid').forEach(function (el) {
+      var wrap = el.tagName === 'CODE' ? el.parentElement : el;
+      if (!wrap.isConnected) return;
       var code = wrap.querySelector('code');
       var div = document.createElement('div');
       div.className = 'mermaid';
